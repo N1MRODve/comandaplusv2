@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-primary: 249 115 22;
+    --color-secondary: 55 65 81;
+    --color-success: 16 185 129;
+    --color-warning: 245 158 11;
+    --color-error: 239 68 68;
+    --color-background: 249 250 251;
+  }
+}
+
+body {
+  @apply bg-gray-50 text-gray-900 antialiased;
+}
