@@ -65,6 +65,24 @@ export const useOrdersStore = defineStore('orders', () => {
     }
   }
 
+  async function loadItemsForOrder(orderId: string) {
+    try {
+      const { data: itemsData, error: itemsError } = await supabase
+        .from('items_pedido')
+        .select('*')
+        .eq('pedido_id', orderId);
+
+      if (itemsError) throw itemsError;
+
+      const orderIndex = orders.value.findIndex(o => o.id === orderId);
+      if (orderIndex !== -1) {
+        orders.value[orderIndex].items = itemsData || [];
+      }
+    } catch (err: any) {
+      console.error('Error loading items for order:', err);
+    }
+  }
+
   async function updateOrder(orderId: string, updates: Partial<Order>) {
     try {
       const { error: updateError } = await supabase
@@ -93,26 +111,29 @@ export const useOrdersStore = defineStore('orders', () => {
     }
   }
 
-  function handleOrderUpdate(payload: RealtimePostgresChangesPayload) {
+  async function handleOrderUpdate(payload: RealtimePostgresChangesPayload<any>) {
     const { eventType, new: newRecord, old: oldRecord } = payload
 
     switch (eventType) {
       case 'INSERT':
-        orders.value.unshift(newRecord as Order)
+        if (newRecord) {
+          orders.value.unshift({ ...newRecord as Order, items: [] });
+          await loadItemsForOrder(newRecord.id);
+        }
         break
       case 'UPDATE':
-        const index = orders.value.findIndex(o => o.id === oldRecord.id)
-        if (index !== -1) {
+        const index = orders.value.findIndex(o => o.id === (oldRecord?.id || newRecord?.id))
+        if (index !== -1 && newRecord) {
           orders.value[index] = { ...orders.value[index], ...newRecord }
         }
         break
       case 'DELETE':
-        orders.value = orders.value.filter(o => o.id !== oldRecord.id)
+        orders.value = orders.value.filter(o => o.id !== oldRecord?.id)
         break
     }
   }
 
-  function handleItemUpdate(payload: RealtimePostgresChangesPayload) {
+  function handleItemUpdate(payload: RealtimePostgresChangesPayload<any>) {
     const { eventType, new: newRecord, old: oldRecord } = payload
 
     const order = orders.value.find(o => 
@@ -123,16 +144,18 @@ export const useOrdersStore = defineStore('orders', () => {
 
     switch (eventType) {
       case 'INSERT':
-        order.items.push(newRecord as OrderItem)
+        if (newRecord) {
+          order.items.push(newRecord as OrderItem)
+        }
         break
       case 'UPDATE':
-        const itemIndex = order.items.findIndex(i => i.id === oldRecord.id)
-        if (itemIndex !== -1) {
+        const itemIndex = order.items.findIndex(i => i.id === (oldRecord?.id || newRecord?.id))
+        if (itemIndex !== -1 && newRecord) {
           order.items[itemIndex] = { ...order.items[itemIndex], ...newRecord }
         }
         break
       case 'DELETE':
-        order.items = order.items.filter(i => i.id !== oldRecord.id)
+        order.items = order.items.filter(i => i.id !== oldRecord?.id)
         break
     }
   }

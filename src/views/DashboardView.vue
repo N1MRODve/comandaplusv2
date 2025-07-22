@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Header -->
     <div class="bg-white shadow-sm border-b">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center py-6">
@@ -34,7 +33,6 @@
           </div>
           
           <div class="flex items-center space-x-4">
-            <!-- Selector de restaurante -->
             <select 
               v-if="authStore.userRestaurants.length > 1"
               :value="authStore.currentRestaurant?.id"
@@ -46,7 +44,6 @@
               </option>
             </select>
             
-            <!-- Toggle tiempo real -->
             <button 
               @click="toggleRealTime"
               :class="[
@@ -59,7 +56,6 @@
               {{ dashboardStore.realTimeEnabled ? 'Tiempo real ON' : 'Tiempo real OFF' }}
             </button>
             
-            <!-- Botón de actualizar -->
             <button 
               @click="refreshData"
               :disabled="dashboardStore.loading"
@@ -84,7 +80,6 @@
       </div>
     </div>
 
-    <!-- Alertas -->
     <div v-if="dashboardStore.alertas.length > 0" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
       <div class="space-y-2">
         <div 
@@ -113,13 +108,11 @@
       </div>
     </div>
 
-    <!-- Loading state -->
     <div v-if="dashboardStore.loading && !dashboardStore.hasData" class="flex justify-center items-center py-12">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       <span class="ml-3 text-gray-600">Cargando dashboard...</span>
     </div>
 
-    <!-- Error state -->
     <div v-else-if="dashboardStore.error" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
         <svg class="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,11 +129,8 @@
       </div>
     </div>
 
-    <!-- Content -->
     <div v-else class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <!-- KPIs del día -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Ventas del día -->
         <div class="bg-white rounded-lg shadow-sm border p-6 transition-all hover:shadow-md">
           <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -165,7 +155,6 @@
           </div>
         </div>
 
-        <!-- Pedidos activos -->
         <div class="bg-white rounded-lg shadow-sm border p-6 transition-all hover:shadow-md">
           <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -188,7 +177,6 @@
           </div>
         </div>
 
-        <!-- Ocupación de mesas -->
         <div class="bg-white rounded-lg shadow-sm border p-6 transition-all hover:shadow-md">
           <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -212,7 +200,6 @@
           </div>
         </div>
 
-        <!-- Productividad cocina -->
         <div class="bg-white rounded-lg shadow-sm border p-6 transition-all hover:shadow-md">
           <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -235,9 +222,7 @@
         </div>
       </div>
 
-      <!-- Acciones rápidas -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Gestión de pedidos -->
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,11 +232,15 @@
           </h3>
           <div class="space-y-3">
             <router-link 
-              :to="`/pedidos/${authStore.currentRestaurant?.id}`"
+              v-if="authStore.currentRestaurant?.id"
+              :to="{ name: 'pedidos', params: { restaurante_id: authStore.currentRestaurant.id } }"
               class="block w-full bg-orange-500 text-white text-center py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium"
             >
               Ver todos los pedidos ({{ dashboardStore.totalPedidosActivos }})
             </router-link>
+             <button v-else class="block w-full bg-gray-300 text-gray-500 text-center py-3 px-4 rounded-lg cursor-not-allowed font-medium">
+              Ver todos los pedidos
+            </button>
             <button 
               @click="generateQR"
               class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium"
@@ -261,7 +250,33 @@
           </div>
         </div>
 
-        <!-- Gestión de menú -->
+        <div class="bg-white rounded-lg shadow-sm border p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Gestión de Salón
+          </h3>
+          <div class="space-y-3">
+            <router-link 
+              v-if="authStore.currentRestaurant?.id"
+              :to="{ name: 'salon', params: { restaurante_id: authStore.currentRestaurant.id } }"
+              class="block w-full bg-purple-500 text-white text-center py-3 px-4 rounded-lg hover:bg-purple-600 transition-colors font-medium"
+            >
+              Ver estado del salón
+            </router-link>
+            <button v-else class="block w-full bg-gray-300 text-gray-500 text-center py-3 px-4 rounded-lg cursor-not-allowed font-medium">
+              Ver estado del salón
+            </button>
+             <div class="text-xs text-gray-500 bg-gray-50 p-2 rounded">
+              <div class="flex justify-between">
+                <span>Ocupación:</span>
+                <span class="font-medium">{{ dashboardStore.mesasOcupadas.ocupadas }}/{{ dashboardStore.mesasOcupadas.total }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
             <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,14 +285,17 @@
             Gestión de Menú
           </h3>
           <div class="space-y-3">
-            <button 
+             <router-link 
+              v-if="authStore.currentRestaurant?.id"
+              :to="{ name: 'menu-gestion', params: { restaurante_id: authStore.currentRestaurant.id } }"
               class="block w-full bg-blue-500 text-white text-center py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors font-medium"
-              disabled
             >
               Editar menú
-              <span class="text-xs block mt-1 opacity-75">Próximamente</span>
+            </router-link>
+             <button v-else class="block w-full bg-gray-300 text-gray-500 text-center py-3 px-4 rounded-lg cursor-not-allowed font-medium">
+              Editar menú
             </button>
-            <button 
+             <button 
               class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium"
               disabled
             >
@@ -287,22 +305,25 @@
           </div>
         </div>
 
-        <!-- Reportes -->
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Reportes
+             <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+             </svg>
+            Analytics & Reportes
           </h3>
           <div class="space-y-3">
             <router-link 
-              :to="`/analytics/${authStore.currentRestaurant?.id}`"
-              class="block w-full bg-purple-500 text-white text-center py-3 px-4 rounded-lg hover:bg-purple-600 transition-colors font-medium"
+              v-if="authStore.currentRestaurant?.id"
+              :to="{ name: 'analytics', params: { restaurante_id: authStore.currentRestaurant.id } }"
+              class="block w-full bg-indigo-500 text-white text-center py-3 px-4 rounded-lg hover:bg-indigo-600 transition-colors font-medium"
             >
               Ver analytics
             </router-link>
-            <button 
+             <button v-else class="block w-full bg-gray-300 text-gray-500 text-center py-3 px-4 rounded-lg cursor-not-allowed font-medium">
+              Ver analytics
+            </button>
+             <button 
               class="block w-full bg-gray-100 text-gray-700 text-center py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors font-medium"
               disabled
             >
@@ -313,9 +334,7 @@
         </div>
       </div>
 
-      <!-- Actividad reciente -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Pedidos activos en tiempo real -->
         <div class="bg-white rounded-lg shadow-sm border">
           <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <h3 class="text-lg font-medium text-gray-900 flex items-center">
@@ -328,11 +347,13 @@
               </span>
             </h3>
             <router-link 
-              :to="`/pedidos/${authStore.currentRestaurant?.id}`"
+              v-if="authStore.currentRestaurant?.id"
+              :to="{ name: 'pedidos', params: { restaurante_id: authStore.currentRestaurant.id } }"
               class="text-sm text-orange-600 hover:text-orange-700 font-medium"
             >
               Ver todos →
             </router-link>
+            <span v-else class="text-sm text-gray-400 font-medium">Ver todos →</span>
           </div>
           <div class="p-6 max-h-96 overflow-y-auto">
             <div v-if="dashboardStore.pedidosActivos.length > 0" class="space-y-4">
@@ -376,7 +397,6 @@
           </div>
         </div>
 
-        <!-- Productos más vendidos -->
         <div class="bg-white rounded-lg shadow-sm border">
           <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-medium text-gray-900 flex items-center">
@@ -387,7 +407,7 @@
             </h3>
           </div>
           <div class="p-6">
-            <div v-if="dashboardStore.productosMasVendidos.length > 0" class="space-y-4">
+            <div v-if="dashboardStore.productosMasVendidos && dashboardStore.productosMasVendidos.length > 0" class="space-y-4">
               <div 
                 v-for="(producto, index) in dashboardStore.productosMasVendidos.slice(0, 5)" 
                 :key="producto.id"
@@ -414,7 +434,7 @@
                   <div class="w-16 bg-gray-200 rounded-full h-2">
                     <div 
                       class="bg-orange-500 h-2 rounded-full transition-all duration-300" 
-                      :style="{ width: `${(producto.cantidad_vendida / Math.max(...dashboardStore.productosMasVendidos.map(p => p.cantidad_vendida))) * 100}%` }"
+                      :style="{ width: `${(dashboardStore.productosMasVendidos && dashboardStore.productosMasVendidos.length > 0 && Math.max(1, ...dashboardStore.productosMasVendidos.map(p => p.cantidad_vendida)) > 0 ? (producto.cantidad_vendida / Math.max(1, ...dashboardStore.productosMasVendidos.map(p => p.cantidad_vendida))) : 0) * 100}%` }"
                     ></div>
                   </div>
                 </div>
@@ -422,7 +442,7 @@
             </div>
             <div v-else class="text-center py-8 text-gray-500">
               <svg class="mx-auto h-12 w-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
               <p>No hay datos de productos</p>
               <p class="text-sm">Los productos más vendidos aparecerán aquí</p>
@@ -431,17 +451,15 @@
         </div>
       </div>
 
-      <!-- Gráfico de ventas (si hay datos) -->
-      <div v-if="dashboardStore.ventasUltimos7Dias.length > 0" class="mt-8">
+      <div v-if="dashboardStore.ventasUltimos7Dias && dashboardStore.ventasUltimos7Dias.length > 0" class="mt-8">
         <div class="bg-white rounded-lg shadow-sm border p-6">
           <h3 class="text-lg font-medium text-gray-900 mb-6 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-            </svg>
+             <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+             </svg>
             Ventas de los Últimos 7 Días
           </h3>
           
-          <!-- Simple chart with bars -->
           <div class="space-y-4">
             <div 
               v-for="venta in dashboardStore.ventasUltimos7Dias" 
@@ -456,7 +474,7 @@
                   <div class="flex-1 bg-gray-200 rounded-full h-6 relative">
                     <div 
                       class="bg-gradient-to-r from-orange-400 to-orange-600 h-6 rounded-full transition-all duration-500 flex items-center justify-end pr-2"
-                      :style="{ width: `${(venta.ventas / Math.max(...dashboardStore.ventasUltimos7Dias.map(v => v.ventas))) * 100}%` }"
+                      :style="{ width: `${(dashboardStore.ventasUltimos7Dias && dashboardStore.ventasUltimos7Dias.length > 0 && Math.max(1, ...dashboardStore.ventasUltimos7Dias.map(v => v.ventas)) > 0 ? (venta.ventas / Math.max(1, ...dashboardStore.ventasUltimos7Dias.map(v => v.ventas))) : 0) * 100}%` }"
                     >
                       <span class="text-xs font-medium text-white">
                         €{{ formatCurrency(venta.ventas) }}
@@ -474,7 +492,6 @@
       </div>
     </div>
 
-    <!-- QR Modal -->
     <div v-if="showQRModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div class="flex justify-between items-center mb-4">
@@ -518,12 +535,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useDashboardStore } from '@/stores/dashboard'
+import { useAuthStore } from '@/stores/auth' // [cite: n1mrodve/comandaplusv2/comandaplusv2-e9c80b0cf16646bfc80737f7746db400e2d7a9f8/src/stores/auth.ts]
+import { useDashboardStore } from '@/stores/dashboard' // [cite: n1mrodve/comandaplusv2/comandaplusv2-e9c80b0cf16646bfc80737f7746db400e2d7a9f8/src/stores/dashboard.ts]
 import { useRoute, useRouter } from 'vue-router'
 
-const authStore = useAuthStore()
-const dashboardStore = useDashboardStore()
+const authStore = useAuthStore() // [cite: n1mrodve/comandaplusv2/comandaplusv2-e9c80b0cf16646bfc80737f7746db400e2d7a9f8/src/stores/auth.ts]
+const dashboardStore = useDashboardStore() // [cite: n1mrodve/comandaplusv2/comandaplusv2-e9c80b0cf16646bfc80737f7746db400e2d7a9f8/src/stores/dashboard.ts]
 const route = useRoute()
 const router = useRouter()
 
@@ -538,13 +555,19 @@ const currentRestaurantId = computed(() => {
 
 // Métodos de formato
 const formatCurrency = (value: number): string => {
+  if (typeof value !== 'number' || isNaN(value)) {
+    return '0.00'
+  }
   return new Intl.NumberFormat('es-ES', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(value)
 }
 
-const formatTime = (date: Date): string => {
+const formatTime = (date: Date | null): string => {
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return '--:--:--';
+  }
   return new Intl.DateTimeFormat('es-ES', {
     hour: '2-digit',
     minute: '2-digit',
@@ -553,7 +576,9 @@ const formatTime = (date: Date): string => {
 }
 
 const formatShortDate = (dateString: string): string => {
+  if (!dateString) return ''
   const date = new Date(dateString)
+  if (isNaN(date.getTime())) return '';
   return new Intl.DateTimeFormat('es-ES', {
     weekday: 'short',
     day: 'numeric'
@@ -561,7 +586,7 @@ const formatShortDate = (dateString: string): string => {
 }
 
 const getEstadoTexto = (estado: string): string => {
-  const textos = {
+  const textos: Record<string, string> = {
     'pendiente': 'Pendiente',
     'confirmado': 'Confirmado',
     'en_preparacion': 'En preparación',
@@ -576,7 +601,7 @@ const getEstadoTexto = (estado: string): string => {
 // Métodos principales
 const initializeDashboard = async () => {
   if (!currentRestaurantId.value) {
-    console.warn('No hay restaurante seleccionado')
+    console.warn('No hay restaurante seleccionado para inicializar el dashboard')
     return
   }
 
@@ -584,7 +609,7 @@ const initializeDashboard = async () => {
     dashboardStore.clearError()
     await dashboardStore.initialize(currentRestaurantId.value)
   } catch (error) {
-    console.error('Error inicializando dashboard:', error)
+    console.error('Error inicializando dashboard desde la vista:', error)
   }
 }
 
@@ -594,7 +619,7 @@ const refreshData = async () => {
   try {
     await dashboardStore.refreshData(currentRestaurantId.value)
   } catch (error) {
-    console.error('Error refrescando datos:', error)
+    console.error('Error refrescando datos desde la vista:', error)
   }
 }
 
@@ -603,17 +628,17 @@ const handleRestaurantChange = async (event: Event) => {
   const restaurantId = target.value
   
   if (restaurantId && restaurantId !== authStore.currentRestaurant?.id) {
-    // Actualizar el restaurante actual en el store
     authStore.setCurrentRestaurant(restaurantId)
     
-    // Navegar a la nueva URL con el restaurante
     await router.push({
-      name: 'dashboard',
+      name: 'dashboard', // Usar nombre de ruta
       params: { restaurante_id: restaurantId }
     })
-    
-    // Reinicializar el dashboard
-    await initializeDashboard()
+    // La inicialización/actualización de datos del dashboard debería ocurrir
+    // automáticamente debido al cambio de `currentRestaurantId` o
+    // a través del `onMounted` si la vista se recarga.
+    // Opcionalmente, se puede llamar a initializeDashboard aquí si es necesario.
+    await initializeDashboard();
   }
 }
 
@@ -633,10 +658,8 @@ const generateQR = () => {
 const generateQRCode = () => {
   if (!selectedTable.value.trim() || !currentRestaurantId.value) return
   
-  // Generar URL del menú digital
   const menuUrl = `${window.location.origin}/menu/${currentRestaurantId.value}/${selectedTable.value.trim()}`
   
-  // Abrir en nueva ventana para mostrar QR
   window.open(
     `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(menuUrl)}`,
     '_blank'
@@ -650,7 +673,6 @@ const generateQRCode = () => {
 onMounted(async () => {
   console.log('🏪 DashboardView montado')
   
-  // Verificar que el usuario tenga acceso al dashboard
   try {
     authStore.requireDashboardAccess()
   } catch (error) {
@@ -659,26 +681,42 @@ onMounted(async () => {
     return
   }
 
-  // Si hay un restaurante en la URL, establecerlo como actual
-  if (currentRestaurantId.value && currentRestaurantId.value !== authStore.currentRestaurant?.id) {
-    const hasAccess = await authStore.checkRestaurantAccess(currentRestaurantId.value)
+  // Si hay un ID de restaurante en la URL, intentar establecerlo
+  if (route.params.restaurante_id && route.params.restaurante_id !== authStore.currentRestaurant?.id) {
+    const newRestaurantId = route.params.restaurante_id as string;
+    const hasAccess = await authStore.checkRestaurantAccess(newRestaurantId)
     if (hasAccess) {
-      authStore.setCurrentRestaurant(currentRestaurantId.value)
+      authStore.setCurrentRestaurant(newRestaurantId)
     } else {
-      console.warn('Sin acceso al restaurante:', currentRestaurantId.value)
-      // Redirigir al primer restaurante disponible
+      console.warn('Sin acceso al restaurante de la URL:', newRestaurantId)
+      // Si no tiene acceso al de la URL, intentar con el primero de su lista
       if (authStore.userRestaurants.length > 0) {
-        await router.push({
-          name: 'dashboard',
-          params: { restaurante_id: authStore.userRestaurants[0].id }
-        })
-        return
+        const firstRestaurantId = authStore.userRestaurants[0].id;
+        authStore.setCurrentRestaurant(firstRestaurantId); // Establecerlo
+        // Redirigir a la URL con el ID del primer restaurante
+        await router.replace({ name: 'dashboard', params: { restaurante_id: firstRestaurantId } })
+        // No es necesario llamar a initializeDashboard aquí, el cambio de ruta lo hará o el watcher
+        return; 
+      } else {
+        dashboardStore.error = "No tienes acceso a ningún restaurante."
+        return;
       }
     }
+  } else if (!authStore.currentRestaurant && authStore.userRestaurants.length > 0) {
+    // Si no hay restaurante actual pero el usuario tiene restaurantes, establecer el primero y redirigir
+     const firstRestaurantId = authStore.userRestaurants[0].id;
+     authStore.setCurrentRestaurant(firstRestaurantId);
+     await router.replace({ name: 'dashboard', params: { restaurante_id: firstRestaurantId } });
+     return; // La redirección causará un nuevo onMounted o un watcher que inicializará
   }
-
-  // Inicializar el dashboard
-  await initializeDashboard()
+  
+  // Inicializar el dashboard si hay un restaurante válido seleccionado (ya sea de URL o del store)
+  if (authStore.currentRestaurant?.id) {
+    await initializeDashboard()
+  } else if (authStore.userRestaurants.length === 0 && !authStore.loading) {
+    // Si después de todo no hay restaurantes y no está cargando
+    dashboardStore.error = "No hay restaurantes disponibles para mostrar en el dashboard."
+  }
 })
 
 onUnmounted(() => {

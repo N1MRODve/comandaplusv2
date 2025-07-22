@@ -3,10 +3,13 @@ import { useAuthStore } from '@/stores/auth'
 import HomeView from '../views/HomeView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import PedidosView from '../views/PedidosView.vue'
+import MenuView from '../views/MenuView.vue'
 import MenuDigitalView from '../views/MenuDigitalView.vue'
 import AnalyticsView from '../views/AnalyticsView.vue'
+import SalonView from '../views/SalonView.vue'
 import AuthView from '../views/AuthView.vue'
 import CreateProfileView from '../views/CreateProfileView.vue'
+import PerfilView from '../views/PerfilView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +33,17 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresProfile: false }
     },
     {
+      path: '/perfil/:restaurante_id?',
+      name: 'perfil',
+      component: PerfilView,
+      meta: { 
+        requiresAuth: true, 
+        requiresProfile: true, 
+        roles: ['empleado', 'encargado', 'dueño', 'admin'],
+        requiresRestaurantAccess: true
+      }
+    },
+    {
       path: '/menu/:restaurante_id/:mesa?',
       name: 'menu-digital',
       component: MenuDigitalView,
@@ -47,6 +61,17 @@ const router = createRouter({
       }
     },
     {
+      path: '/salon/:restaurante_id?',
+      name: 'salon',
+      component: SalonView,
+      meta: { 
+        requiresAuth: true, 
+        requiresProfile: true, 
+        roles: ['dueño', 'encargado', 'admin'],
+        requiresRestaurantAccess: true 
+      }
+    },
+    {
       path: '/pedidos/:restaurante_id?',
       name: 'pedidos',
       component: PedidosView,
@@ -55,6 +80,17 @@ const router = createRouter({
         requiresProfile: true, 
         roles: ['empleado', 'encargado', 'dueño', 'admin'],
         requiresRestaurantAccess: true
+      }
+    },
+    {
+      path: '/menu-gestion/:restaurante_id?',
+      name: 'menu-gestion',
+      component: MenuView,
+      meta: { 
+        requiresAuth: true, 
+        requiresProfile: true, 
+        roles: ['encargado', 'dueño', 'admin'],
+        requiresRestaurantAccess: true 
       }
     },
     {
@@ -76,215 +112,208 @@ const router = createRouter({
   ]
 })
 
-// Función auxiliar para esperar a que el store esté inicializado
 async function waitForAuthInit(authStore: ReturnType<typeof useAuthStore>, maxAttempts = 10): Promise<void> {
   let attempts = 0
-  
   while (!authStore.isInitialized && attempts < maxAttempts) {
     await new Promise(resolve => setTimeout(resolve, 100))
     attempts++
   }
-  
   if (attempts >= maxAttempts) {
     console.warn('Auth store initialization timeout')
   }
 }
 
-// Navigation guard
+async function waitForProfileLoad(authStore: ReturnType<typeof useAuthStore>, maxAttempts = 30): Promise<void> {
+  let attempts = 0
+  console.log('NavGuard: Starting to wait for profile load...', { isAuth: authStore.isAuthenticated, hasProfile: authStore.hasProfile, loading: authStore.loading })
+  
+  while (authStore.isAuthenticated && !authStore.hasProfile && attempts < maxAttempts) {
+    await new Promise(resolve => setTimeout(resolve, 150))
+    attempts++
+    console.log(`NavGuard: Waiting for profile... attempt ${attempts}/${maxAttempts}`, { hasProfile: authStore.hasProfile, loading: authStore.loading })
+  }
+  
+  console.log('NavGuard: Profile wait finished.', { attempts, hasProfile: authStore.hasProfile, maxAttempts })
+  
+  if (attempts >= maxAttempts && authStore.isAuthenticated && !authStore.hasProfile) {
+    console.warn('NavGuard: Profile load timeout - user is authenticated but no profile found')
+  }
+}
+
 router.beforeEach(async (to, from, next) => {
   try {
-    // Obtener el store de autenticación
-    const authStore = useAuthStore()
-    
-    // Esperar a que el store esté inicializado
-    await waitForAuthInit(authStore)
-    
-    // Si aún está cargando datos iniciales, esperar un poco más
+    const authStore = useAuthStore();
+    await waitForAuthInit(authStore);
+
+    // Esperar a que termine la carga general
     if (authStore.loading) {
-      let retries = 0
+      let retries = 0;
       while (authStore.loading && retries < 20) {
-        await new Promise(resolve => setTimeout(resolve, 100))
-        retries++
+        await new Promise(resolve => setTimeout(resolve, 100));
+        retries++;
       }
     }
 
-    // Verificar autenticación
-    const requiresAuth = to.meta.requiresAuth
-    const requiresProfile = to.meta.requiresProfile
-    const allowedRoles = to.meta.roles as string[] | undefined
-    const requiresDashboardAccess = to.meta.requiresDashboardAccess
-    const requiresRestaurantAccess = to.meta.requiresRestaurantAccess
-
-    console.log('Navigation guard:', {
-      to: to.name,
-      requiresAuth,
-      isAuthenticated: authStore.isAuthenticated,
-      hasProfile: authStore.hasProfile,
-      userRole: authStore.userRole,
-      allowedRoles
-    })
-
-    // Si la ruta requiere autenticación pero no está autenticado
-    if (requiresAuth && !authStore.isAuthenticated) {
-      console.log('Redirecting to auth - not authenticated')
-      next({ name: 'auth', query: { redirect: to.fullPath } })
-      return
+    // Si está autenticado, esperar a que cargue el perfil
+    if (authStore.isAuthenticated) {
+      await waitForProfileLoad(authStore);
     }
 
-    // Si está autenticado pero va a auth, redirigir según corresponda
+    const { requiresAuth, requiresProfile, roles, requiresDashboardAccess, requiresRestaurantAccess } = to.meta;
+
+    console.log('NavGuard:', { 
+      to: to.name, 
+      from: from.name, 
+      params: to.params, 
+      auth: authStore.isAuthenticated, 
+      profile: authStore.hasProfile, 
+      role: authStore.userRole, 
+      currentRestId: authStore.currentRestaurant?.id,
+      userRestaurants: authStore.userRestaurants.length 
+    });
+
+    // 1. Si requiere autenticación y no está autenticado
+    if (requiresAuth && !authStore.isAuthenticated) {
+      console.log('NavGuard: Redirecting to auth - not authenticated');
+      next({ name: 'auth', query: { redirect: to.fullPath } });
+      return;
+    }
+
+    // 2. Si está autenticado y va a /auth, redirigir según su estado
     if (authStore.isAuthenticated && to.name === 'auth') {
-      console.log('Redirecting from auth - already authenticated')
+      console.log('NavGuard: Redirecting from auth - already authenticated');
       
       if (!authStore.hasProfile) {
-        next({ name: 'create-profile' })
-      } else if (authStore.canAccessDashboard) {
-        next({ name: 'dashboard' })
+        console.log('NavGuard: No profile found, redirecting to create-profile');
+        next({ name: 'create-profile' });
+      } else if (authStore.canAccessDashboard && authStore.userRestaurants.length > 0) {
+        // Tiene perfil, puede acceder al dashboard Y tiene restaurantes
+        const targetRestaurantId = authStore.currentRestaurant?.id || authStore.userRestaurants[0]?.id;
+        console.log('NavGuard: Has profile and restaurants, redirecting to dashboard with ID:', targetRestaurantId);
+        next({ name: 'dashboard', params: { restaurante_id: targetRestaurantId }, replace: true });
       } else {
-        next({ name: 'home' })
+        // Tiene perfil pero no tiene restaurantes, ir a home
+        console.log('NavGuard: Has profile but no restaurants, redirecting to home');
+        next({ name: 'home' });
       }
-      return
+      return;
     }
 
-    // Si la ruta requiere perfil pero no lo tiene
+    // 3. Si requiere perfil y no lo tiene
     if (requiresAuth && requiresProfile !== false && authStore.isAuthenticated && !authStore.hasProfile) {
-      // Si ya está en create-profile, permitir acceso
       if (to.name === 'create-profile') {
-        next()
-        return
+        next();
+        return;
       }
-      
-      console.log('Redirecting to create-profile - no profile')
-      next({ name: 'create-profile', query: { redirect: to.fullPath } })
-      return
+      console.log('NavGuard: Redirecting to create-profile - no profile');
+      next({ name: 'create-profile', query: { redirect: to.fullPath } });
+      return;
     }
 
-    // Si tiene perfil pero va a create-profile, redirigir según rol
+    // 4. Si tiene perfil pero está en create-profile, redirigir
     if (authStore.hasProfile && to.name === 'create-profile') {
-      console.log('Redirecting from create-profile - already has profile')
-      
-      if (authStore.canAccessDashboard) {
-        next({ name: 'dashboard' })
+      console.log('NavGuard: Redirecting from create-profile - already has profile');
+      if (authStore.canAccessDashboard && authStore.userRestaurants.length > 0) {
+        const targetRestaurantId = authStore.currentRestaurant?.id || authStore.userRestaurants[0]?.id;
+        console.log('NavGuard: Redirecting to dashboard with restaurant ID:', targetRestaurantId);
+        next({ name: 'dashboard', params: { restaurante_id: targetRestaurantId }, replace: true });
       } else {
-        next({ name: 'home' })
+        console.log('NavGuard: No restaurants available, redirecting to home');
+        next({ name: 'home' });
       }
-      return
+      return;
     }
 
-    // Verificar roles si están definidos
-    if (allowedRoles && authStore.isAuthenticated && authStore.hasProfile) {
-      const userRole = authStore.userRole
-      if (!allowedRoles.includes(userRole)) {
-        console.log('Access denied - insufficient role:', { userRole, allowedRoles })
-        
-        // Redirigir según las capacidades del usuario
-        if (authStore.canAccessDashboard) {
-          next({ name: 'dashboard' })
+    // 5. Verificar roles si es requerido
+    if (roles && authStore.isAuthenticated && authStore.hasProfile) {
+      const userRole = authStore.userRole;
+      if (!(roles as string[]).includes(userRole)) {
+        console.log('NavGuard: Access denied - insufficient role:', { userRole, allowedRoles: roles });
+        if (authStore.canAccessDashboard && authStore.userRestaurants.length > 0) {
+          const targetRestaurantId = authStore.currentRestaurant?.id || authStore.userRestaurants[0]?.id;
+          next({ name: 'dashboard', params: { restaurante_id: targetRestaurantId }, replace: true });
         } else {
-          next({ name: 'home' })
+          next({ name: 'home' });
         }
-        return
+        return;
       }
     }
 
-    // Verificar acceso específico al dashboard
+    // 6. Verificar acceso al dashboard
     if (requiresDashboardAccess && authStore.hasProfile && !authStore.canAccessDashboard) {
-      console.log('Access denied - no dashboard access')
-      next({ name: 'home' })
-      return
+      console.log('NavGuard: Access denied - no dashboard access');
+      next({ name: 'home' });
+      return;
     }
-
-    // Verificar acceso a restaurante específico
-    if (requiresRestaurantAccess && authStore.hasProfile) {
-      const restauranteId = to.params.restaurante_id as string
+    
+    // 7. Manejo de rutas que necesitan restaurant_id
+    const routesNeedingRestaurantId = ['dashboard', 'pedidos', 'analytics', 'menu-gestion', 'salon', 'perfil'];
+    if (routesNeedingRestaurantId.includes(to.name as string) && authStore.hasProfile) {
       
-      // Si hay un restaurante específico en la URL, verificar acceso
-      if (restauranteId) {
-        const hasAccess = await authStore.checkRestaurantAccess(restauranteId)
+      // Si no tiene restaurantes, enviar a home
+      if (authStore.userRestaurants.length === 0) {
+        console.log(`NavGuard: No restaurants available for route: ${to.name as string}`);
+        next({ name: 'home' });
+        return;
+      }
+
+      let restauranteIdFromParams = to.params.restaurante_id as string | undefined;
+
+      if (restauranteIdFromParams) {
+        // Verificar acceso al restaurante específico
+        const hasAccess = await authStore.checkRestaurantAccess(restauranteIdFromParams);
         if (!hasAccess) {
-          console.log('Access denied - no restaurant access:', restauranteId)
-          next({ name: 'dashboard' })
-          return
-        }
-        
-        // Establecer como restaurante actual si tiene acceso
-        authStore.setCurrentRestaurant(restauranteId)
-      } else {
-        // Si no hay restaurante en la URL pero se requiere acceso, usar el actual
-        if (!authStore.currentRestaurant) {
-          // Si no tiene restaurante actual y no hay restaurantes disponibles
-          if (authStore.userRestaurants.length === 0) {
-            console.log('No restaurants available')
-            next({ name: 'home' })
-            return
+          console.log(`NavGuard: Access denied to restaurant ${restauranteIdFromParams}.`);
+          const fallbackRestaurantId = authStore.userRestaurants[0]?.id;
+          if (fallbackRestaurantId) {
+            authStore.setCurrentRestaurant(fallbackRestaurantId);
+            console.log(`NavGuard: Redirecting to dashboard with fallback restaurant ID: ${fallbackRestaurantId}`);
+            next({ name: 'dashboard', params: { restaurante_id: fallbackRestaurantId }, replace: true });
+          } else {
+            console.log('NavGuard: No fallback restaurant available.');
+            next({ name: 'home' });
           }
-          
-          // Establecer el primer restaurante como actual
-          authStore.setCurrentRestaurant(authStore.userRestaurants[0].id)
+          return;
         }
-        
-        // Redirigir incluyendo el restaurante actual en la URL
-        if (authStore.currentRestaurant && !to.params.restaurante_id) {
-          next({
-            name: to.name as string,
-            params: { ...to.params, restaurante_id: authStore.currentRestaurant.id },
-            query: to.query
-          })
-          return
-        }
-      }
-    }
-
-    // Manejar rutas de dashboard sin restaurante específico
-    if ((to.name === 'dashboard' || to.name === 'analytics') && authStore.hasProfile) {
-      const restauranteId = to.params.restaurante_id as string
-      
-      if (!restauranteId) {
-        // Si no hay restaurante en la URL, usar el actual o el primero disponible
-        if (!authStore.currentRestaurant && authStore.userRestaurants.length > 0) {
-          authStore.setCurrentRestaurant(authStore.userRestaurants[0].id)
-        }
-        
-        if (authStore.currentRestaurant) {
-          next({
-            name: to.name as string,
-            params: { ...to.params, restaurante_id: authStore.currentRestaurant.id },
-            query: to.query
-          })
-          return
-        } else {
-          // Si no tiene restaurantes, no puede acceder al dashboard
-          console.log('No restaurants available for dashboard')
-          next({ name: 'home' })
-          return
+        if (authStore.currentRestaurant?.id !== restauranteIdFromParams) {
+            authStore.setCurrentRestaurant(restauranteIdFromParams);
         }
       } else {
-        // Verificar que tiene acceso al restaurante específico
-        const hasAccess = await authStore.checkRestaurantAccess(restauranteId)
-        if (!hasAccess) {
-          console.log('Access denied to specific restaurant:', restauranteId)
-          next({ name: 'dashboard' }) // Ir al dashboard sin restaurante específico
-          return
+        // No restaurant_id en URL, usar el actual o el primero disponible
+        let currentRestIdToUse = authStore.currentRestaurant?.id;
+        if (!currentRestIdToUse && authStore.userRestaurants.length > 0 && authStore.userRestaurants[0].id) {
+          currentRestIdToUse = authStore.userRestaurants[0].id;
+          authStore.setCurrentRestaurant(currentRestIdToUse);
         }
-        
-        // Establecer como restaurante actual
-        authStore.setCurrentRestaurant(restauranteId)
+
+        if (currentRestIdToUse) {
+          console.log(`NavGuard: No ID in URL for ${to.name as string}, redirecting with current restaurant ID: ${currentRestIdToUse}`);
+          next({ 
+            name: to.name as string, 
+            params: { ...to.params, restaurante_id: currentRestIdToUse }, 
+            query: to.query, 
+            replace: true 
+          });
+          return;
+        } else {
+          console.log(`NavGuard: No restaurant ID available for route: ${to.name as string}.`);
+          next({ name: 'home' }); 
+          return;
+        }
       }
     }
 
-    // Si todo está bien, continuar
-    console.log('Navigation allowed to:', to.name)
-    next()
+    console.log('NavGuard: Navigation allowed to:', to.name, to.fullPath);
+    next();
     
   } catch (error) {
-    console.error('Error in navigation guard:', error)
-    
-    // En caso de error, redirigir a home
+    console.error('Error in navigation guard:', error);
     if (to.name !== 'home') {
-      next({ name: 'home' })
+      next({ name: 'home' });
     } else {
-      next()
+      next(); // Avoid loop if already on home and error occurs
     }
   }
-})
+});
 
-export default router
+export default router;

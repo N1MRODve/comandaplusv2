@@ -32,10 +32,10 @@
             <div class="flex items-center space-x-2">
               <div :class="[
                 'w-2 h-2 rounded-full',
-                dashboardStore.isRealTimeConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                isRealTimeConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'
               ]"></div>
               <span class="text-sm text-gray-600">
-                {{ dashboardStore.isRealTimeConnected ? 'Tiempo real' : 'Desconectado' }}
+                {{ isRealTimeConnected ? 'Tiempo real' : 'Desconectado' }}
               </span>
             </div>
             
@@ -460,8 +460,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { useDashboardStore } from '@/stores/dashboard'
 import { useOrdersStore } from '@/stores/orders'
+import { supabase } from '@/lib/supabase'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import {
   ArrowPathIcon,
   ExclamationTriangleIcon,
@@ -480,8 +481,48 @@ import MenuEstados from '@/components/pedidos/MenuEstados.vue'
 
 // Stores
 const authStore = useAuthStore()
-const dashboardStore = useDashboardStore()
 const ordersStore = useOrdersStore()
+
+// Estado Local
+const isRealTimeConnected = ref(false)
+let realtimeChannel: RealtimeChannel | null = null
+
+// --- LÓGICA DE TIEMPO REAL ---
+
+const setupRealtime = () => {
+  // Primero, nos aseguramos de limpiar cualquier suscripción anterior
+  if (realtimeChannel) {
+    supabase.removeChannel(realtimeChannel)
+  }
+  
+  const restauranteId = authStore.currentRestaurant?.id
+  if (!restauranteId) return
+
+  // Creamos un canal único para los pedidos de este restaurante
+  realtimeChannel = supabase
+    .channel(`pedidos-restaurante-${restauranteId}`)
+    .on(
+      'postgres_changes',
+      { 
+        event: '*', // Escuchamos cualquier evento (INSERT, UPDATE, DELETE)
+        schema: 'public', 
+        table: 'pedidos',
+        filter: `restaurante_id=eq.${restauranteId}` // Solo para nuestro restaurante
+      },
+      (payload) => {
+        console.log('✅ ¡Cambio en un pedido recibido en tiempo real!', payload)
+        // Le pasamos el evento a nuestro store para que gestione la lógica
+        ordersStore.handleOrderUpdate(payload)
+      }
+    )
+    .subscribe((status) => {
+      // Actualizamos el indicador visual de conexión
+      isRealTimeConnected.value = status === 'SUBSCRIBED'
+      if (status === 'SUBSCRIBED') {
+        console.log(`Conectado a tiempo real para el restaurante ${restauranteId}`)
+      }
+    })
+}
 
 // Estado local
 const loading = ref(false)
@@ -505,7 +546,7 @@ const posicionMenuEstados = ref({ x: 0, y: 0 })
 // Computed properties principales
 const pedidosActivos = computed(() => {
   return ordersStore.orders.filter(pedido => 
-    !['cancelado'].includes(pedido.estado)
+    !['cancelado', 'entregado', 'pagado'].includes(pedido.estado)
   )
 })
 
@@ -814,13 +855,20 @@ const getItemClasses = (estado: string) => {
   return classes[estado as keyof typeof classes] || 'border-gray-300 bg-gray-50'
 }
 
-// Lifecycle
-onMounted(async () => {
-  await refreshData()
+// --- CICLO DE VIDA DEL COMPONENTE ---
+
+onMounted(() => {
+  // Cuando el componente se monta, cargamos los datos iniciales y activamos el tiempo real
+  refreshData()
+  setupRealtime()
 })
 
 onUnmounted(() => {
-  // Cleanup si es necesario
+  // Cuando el componente se destruye, nos desconectamos del canal para no gastar recursos
+  if (realtimeChannel) {
+    supabase.removeChannel(realtimeChannel)
+    console.log('🧹 Desconectado de tiempo real.')
+  }
 })
 
 // Watchers
@@ -829,7 +877,4 @@ watch(() => authStore.currentRestaurant?.id, async (newId) => {
     await refreshData()
   }
 })
-
-// Import necesario
-import { supabase } from '@/lib/supabase'
 </script>

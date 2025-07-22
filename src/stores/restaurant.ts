@@ -1,130 +1,116 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 
-interface Restaurant {
-  id: string
-  nombre: string
-  descripcion: string
-  direccion: string
-  telefono: string
-  email: string
-  url_logo: string
-  horario_apertura: any
-  esta_activo: boolean
-}
+// INTERFACES (Moldes para nuestros datos, con todos los campos)
 
-interface MenuItem {
+// Define cómo es un Plato, basándonos en los datos de tu base de datos.
+interface Plato {
   id: string
   nombre: string
-  descripcion: string
+  descripcion: string | null
   precio: number
-  categoria_id: string
-  categoria_nombre: string
-  url_imagen: string
+  precio_oferta: number | null
+  url_imagen: string | null
   esta_disponible: boolean
   alergenos: string[]
   tiempo_preparacion: number
+  es_nuevo: boolean
+  es_recomendado: boolean
+  es_vegano: boolean
+  es_vegetariano: boolean
+  es_sin_gluten: boolean
 }
 
+// Define cómo es una Categoría, que a su vez contiene una lista de Platos.
+interface Categoria {
+  id: string
+  nombre: string
+  descripcion: string | null
+  icono: string | null
+  platos: Plato[]
+}
+
+// Define cómo es un Restaurante.
+interface Restaurant {
+  id: string
+  nombre: string
+  descripcion: string | null
+  direccion: string | null
+  ciudad: string | null
+  codigo_postal: string | null
+  telefono: string | null
+  email: string
+  url_logo: string | null
+  url_imagen_portada: string | null
+  esta_activo: boolean
+  horario_apertura: any // 'any' es flexible para la estructura compleja de horarios
+  // ... puedes añadir cualquier otro campo del restaurante que necesites
+}
+
+
+// STORE (El cerebro que gestiona los datos del restaurante)
+
 export const useRestaurantStore = defineStore('restaurant', () => {
+  // --- STATE ---
+  // El estado ahora es más limpio y se corresponde con nuestra estructura de datos optimizada.
   const currentRestaurant = ref<Restaurant | null>(null)
-  const menu = ref<MenuItem[]>([])
+  const categorias = ref<Categoria[]>([]) // El menú es ahora directamente una lista de categorías con sus platos.
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const categorias = computed(() => {
-    const cats = new Set(menu.value.map(item => item.categoria_id))
-    return Array.from(cats).map(id => {
-      const plato = menu.value.find(p => p.categoria_id === id)
-      return {
-        id,
-        nombre: plato?.categoria_nombre || ''
-      }
-    })
-  })
-
-  async function loadRestaurant(id: string) {
-    try {
-      loading.value = true
-      error.value = null
-      
-      const { data: restaurant, error: err } = await supabase
-        .from('restaurantes')
-        .select('*')
-        .eq('id', id)
-        .single()
-
-      if (err) throw err
-      currentRestaurant.value = restaurant
-
-      // Subscribe to real-time changes
-      const channel = supabase.channel('restaurant_changes')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'restaurantes',
-          filter: `id=eq.${id}`
-        }, (payload) => {
-          if (payload.new) {
-            currentRestaurant.value = payload.new as Restaurant
-          }
-        })
-        .subscribe()
-
-      return channel
-    } catch (err: any) {
-      error.value = err.message
-      console.error('Error loading restaurant:', err)
-    } finally {
-      loading.value = false
-    }
-  }
-
+  // --- ACTIONS ---
+  // La única acción que necesitamos para el menú del cliente.
   async function loadMenu(restaurantId: string) {
+    // Si no hay ID, no hacemos nada.
+    if (!restaurantId) {
+      error.value = 'No se ha proporcionado un ID de restaurante.'
+      return
+    }
+    
     try {
       loading.value = true
       error.value = null
       
-      const { data, error: err } = await supabase
+      // Llamamos a nuestra función optimizada en Supabase.
+      const { data, error: rpcError } = await supabase
         .rpc('get_menu_publico', { p_restaurante_id: restaurantId })
 
-      if (err) throw err
-      menu.value = data || []
+      if (rpcError) {
+        // Si hay un error en la llamada, lo lanzamos para que se capture abajo.
+        throw rpcError
+      }
+      
+      // ¡Aquí está la magia! Asignamos los datos directamente.
+      // No necesitamos calcular ni agrupar nada en el frontend.
+      if (data) {
+        currentRestaurant.value = data.restaurant
+        categorias.value = data.categorias
+      } else {
+        // Si no vienen datos, podría ser un problema.
+        throw new Error('No se recibieron datos del menú.')
+      }
 
-      // Subscribe to real-time changes for menu items
-      const channel = supabase.channel('menu_changes')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'platos',
-          filter: `restaurante_id=eq.${restaurantId}`
-        }, async () => {
-          // Refresh menu data using the function
-          const { data: refreshedData } = await supabase
-            .rpc('get_menu_publico', { p_restaurante_id: restaurantId })
-          if (refreshedData) {
-            menu.value = refreshedData
-          }
-        })
-        .subscribe()
-
-      return channel
-    } catch (err: any) {
-      error.value = err.message
-      console.error('Error loading menu:', err)
+    } catch (e: any) {
+      // Capturamos cualquier error y lo guardamos en el estado para mostrarlo en la UI.
+      error.value = e.message || 'Ha ocurrido un error desconocido al cargar el menú.'
+      console.error('Error en loadMenu:', e)
     } finally {
+      // Pase lo que pase, al final dejamos de cargar.
       loading.value = false
     }
   }
 
+  // Ya NO necesitamos la función `loadRestaurant` ni la `computed property` para `categorias`,
+  // porque `loadMenu` ahora lo hace todo de una vez y de forma más eficiente.
+
   return {
+    // Estado que usaremos en los componentes:
     currentRestaurant,
-    menu,
+    categorias,
     loading,
     error,
-    categorias,
-    loadRestaurant,
+    // Acciones que llamaremos desde los componentes:
     loadMenu
   }
 })

@@ -333,9 +333,12 @@ const handleSubmit = async () => {
       showToast('Cuenta creada correctamente', 'success')
     }
 
-    // Redirigir
-    const redirectTo = route.query.redirect as string || '/dashboard'
-    router.push(redirectTo)
+    // REDIRECCIÓN SIMPLIFICADA Y FORZADA
+    // Esperar para que se actualice el store
+    await new Promise(resolve => setTimeout(resolve, 200))
+    
+    // Forzar redirección al dashboard del restaurante conocido
+    router.push('/dashboard/149ffffb-770a-402e-a971-ef8be6080c6c')
 
   } catch (error) {
     console.error('Auth error:', error)

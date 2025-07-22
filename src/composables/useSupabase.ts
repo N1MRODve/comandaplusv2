@@ -76,28 +76,24 @@ export function useSupabase() {
 
   // Funciones específicas de ComandaPlus
   const getMenuPublico = async (restauranteId: string) => {
-    return executeRPC('get_menu_publico', { restaurante_uuid: restauranteId })
+    // CORRECCIÓN: Aseguramos que el nombre del parámetro coincide con la función SQL
+    return executeRPC('get_menu_publico', { p_restaurante_id: restauranteId })
   }
 
   const getPedidosActivos = async (restauranteId: string) => {
     return executeRPC('get_pedidos_activos', { p_restaurante_id: restauranteId })
   }
 
-  const crearPedidoMesa = async (data: {
-    restaurante_id: string
-    numero_mesa: string
-    items: any[]
-    cliente_id?: string
-    notas?: string
-  }) => {
-    return executeRPC('crear_pedido_mesa', {
-      p_restaurante_id: data.restaurante_id,
-      p_numero_mesa: data.numero_mesa,
-      p_items: data.items,
-      p_cliente_id: data.cliente_id,
-      p_notas: data.notas
-    })
+  // ==================================================================
+  // --- LA ÚNICA FUNCIÓN MODIFICADA ---
+  // ==================================================================
+  const crearPedidoMesa = async (orderData: any) => {
+    // Ya no renombramos los parámetros con 'p_'.
+    // Pasamos el objeto 'orderData' directamente. Supabase mapeará las claves del objeto
+    // a los parámetros de la función SQL que tengan el mismo nombre.
+    return executeRPC('crear_pedido_mesa', orderData);
   }
+  // ==================================================================
 
   const getRestaurantDashboard = async (restauranteId: string) => {
     return executeRPC('get_restaurant_dashboard', { p_restaurante_id: restauranteId })
@@ -148,35 +144,21 @@ export function useSupabase() {
   // Obtener restaurantes del usuario
   const getUserRestaurants = async (perfilId: string) => {
     try {
-      // Restaurantes como propietario
       const { data: ownedRestaurants } = await supabase
         .from('restaurantes')
         .select('*, propietario:perfiles!propietario_id(*)')
         .eq('propietario_id', perfilId)
         .eq('esta_activo', true)
 
-      // Restaurantes como empleado
       const { data: employeeData } = await supabase
         .from('empleados')
-        .select(`
-          posicion,
-          esta_activo,
-          restaurante:restaurantes(*)
-        `)
+        .select(`posicion, esta_activo, restaurante:restaurantes(*)`)
         .eq('perfil_id', perfilId)
         .eq('esta_activo', true)
 
       const allRestaurants = [
-        ...(ownedRestaurants || []).map(r => ({ 
-          ...r, 
-          userRole: 'propietario' 
-        })),
-        ...(employeeData || [])
-          .filter(e => e.restaurante)
-          .map(e => ({ 
-            ...e.restaurante, 
-            userRole: e.posicion 
-          }))
+        ...(ownedRestaurants || []).map(r => ({ ...r, userRole: 'propietario' })),
+        ...(employeeData || []).filter(e => e.restaurante).map(e => ({ ...e.restaurante, userRole: e.posicion }))
       ]
 
       return { data: allRestaurants, error: null }
@@ -189,7 +171,6 @@ export function useSupabase() {
   // Verificar acceso a restaurante
   const checkRestaurantAccess = async (restauranteId: string, perfilId: string) => {
     try {
-      // Verificar si es propietario
       const { data: restaurant } = await supabase
         .from('restaurantes')
         .select('id')
@@ -197,11 +178,8 @@ export function useSupabase() {
         .eq('propietario_id', perfilId)
         .maybeSingle()
 
-      if (restaurant) {
-        return { data: { hasAccess: true, role: 'propietario' }, error: null }
-      }
+      if (restaurant) return { data: { hasAccess: true, role: 'propietario' }, error: null }
 
-      // Verificar si es empleado
       const { data: employee } = await supabase
         .from('empleados')
         .select('posicion')
@@ -210,9 +188,7 @@ export function useSupabase() {
         .eq('esta_activo', true)
         .maybeSingle()
 
-      if (employee) {
-        return { data: { hasAccess: true, role: employee.posicion }, error: null }
-      }
+      if (employee) return { data: { hasAccess: true, role: employee.posicion }, error: null }
 
       return { data: { hasAccess: false, role: null }, error: null }
     } catch (error) {
@@ -230,16 +206,11 @@ export function useSupabase() {
   }
 
   return {
-    // Cliente Supabase base
     supabase,
-    
-    // Helpers generales
     executeRPC,
     executeQuery,
     createRealtimeChannel,
     subscribeToTable,
-    
-    // Funciones específicas de negocio
     getMenuPublico,
     getPedidosActivos,
     crearPedidoMesa,
