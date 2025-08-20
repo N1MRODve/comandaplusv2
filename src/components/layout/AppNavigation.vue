@@ -1,103 +1,120 @@
 <template>
-  <nav class="bg-white/95 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 border-b border-gray-200/50">
+  <nav class="bg-white/95 backdrop-blur-xl fixed top-0 left-0 right-0 z-50 border-b border-gray-200/50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
+      <div class="flex justify-between h-20">
         <!-- Logo y navegación -->
         <div class="flex items-center">
           <router-link 
             :to="homeRoute" 
-            class="flex items-center space-x-3 text-xl font-bold text-gray-900 hover:text-amber-600 transition-colors"
+            class="flex items-center space-x-4 text-xl font-bold text-gray-900 hover:text-orange-600 transition-all duration-300 group"
           >
-            <div class="w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center">
-              <span class="text-white font-bold text-lg">C+</span>
+            <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+              <span class="text-white font-black text-xl">C+</span>
             </div>
             <div class="hidden sm:block">
-              <span class="text-2xl font-bold text-gray-900">ComandaPlus</span>
-              <div class="text-xs text-gray-500 font-medium">PREMIUM EDITION</div>
+              <span class="text-2xl font-black text-gray-900 group-hover:text-orange-600 transition-colors">ComandaPlus</span>
+              <div class="text-xs text-orange-600 font-bold tracking-wider">PREMIUM EDITION</div>
             </div>
           </router-link>
 
           <!-- Navegación principal - Solo para usuarios autenticados -->
-          <div v-if="props.user && authStore.isAuthenticated" class="hidden lg:ml-8 lg:flex lg:space-x-1">
+          <div v-if="props.user && authStore.isAuthenticated" class="hidden lg:ml-12 lg:flex lg:space-x-2">
             <router-link
               v-for="item in filteredNavigationItems"
               :key="item.name"
               :to="item.disabled ? '#' : item.to"
               :class="[
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                'px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center space-x-2',
                 item.disabled ? 'opacity-50 cursor-not-allowed' : '',
                 isActiveRoute(item.to) 
-                  ? 'bg-amber-100 text-amber-700 border border-amber-200' 
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-orange-100 to-orange-50 text-orange-700 border border-orange-200 shadow-md' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 hover:shadow-sm'
               ]"
               @click="item.disabled && $event.preventDefault()"
             >
               <component 
                 :is="item.icon" 
                 :class="[
-                  'w-5 h-5 mr-2 inline',
-                  isActiveRoute(item.to) ? 'text-amber-600' : 'text-gray-500'
+                  'w-5 h-5',
+                  isActiveRoute(item.to) ? 'text-orange-600' : 'text-gray-500'
                 ]"  
               />
-              {{ item.name }}
+              <span>{{ item.name }}</span>
             </router-link>
           </div>
         </div>
 
         <!-- Área derecha -->
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-6">
           <!-- Usuario autenticado -->
           <template v-if="props.user && authStore.isAuthenticated">
             <!-- Notificaciones -->
-            <button class="relative p-2 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
+            <button class="relative p-3 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-xl transition-all duration-300 hover:shadow-md">
               <BellIcon class="w-6 h-6" />
-              <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+              <span class="absolute -top-1 -right-1 w-6 h-6 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center animate-pulse shadow-lg">
                 3
               </span>
             </button>
 
             <!-- Menú de perfil -->
-            <div class="relative" ref="profileDropdown">
+            <div class="relative group" ref="profileDropdown">
               <button
                 @click="showProfileMenu = !showProfileMenu"
-                class="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-50 transition-all duration-300 hover:shadow-md group-hover:scale-105"
               >
-                <div class="w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-500 rounded-lg flex items-center justify-center">
-                  <span class="text-white text-sm font-bold">
+                <div class="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <span class="text-white text-base font-bold">
                     {{ getUserInitials(props.user?.nombre_completo) }}
                   </span>
                 </div>
                 <div class="hidden sm:block text-left">
-                  <p class="text-sm font-medium text-gray-900">
+                  <p class="text-base font-semibold text-gray-900">
                     {{ props.user?.nombre_completo || 'Usuario' }}
                   </p>
-                  <p class="text-xs text-gray-500 capitalize">
+                  <p class="text-sm text-orange-600 capitalize font-medium">
                     {{ props.user?.rol || 'cliente' }}
                   </p>
                 </div>
-                <ChevronDownIcon class="w-4 h-4 text-gray-400" />
+                <ChevronDownIcon class="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
               </button>
 
               <!-- Dropdown del perfil -->
               <div
                 v-if="showProfileMenu"
-                class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                class="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 backdrop-blur-xl"
                 @click.stop
               >
+                <!-- Profile header in dropdown -->
+                <div class="px-6 py-4 border-b border-gray-100">
+                  <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                      <span class="text-white text-lg font-bold">
+                        {{ getUserInitials(props.user?.nombre_completo) }}
+                      </span>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-gray-900">{{ props.user?.nombre_completo || 'Usuario' }}</p>
+                      <p class="text-sm text-orange-600 capitalize font-medium">{{ props.user?.rol || 'cliente' }}</p>
+                    </div>
+                  </div>
+                </div>
+                
                 <router-link
                   :to="profileRoute" 
-                  class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  class="flex items-center px-6 py-3 text-base text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-all duration-200"
                   @click="showProfileMenu = false"
                 >
-                  <UserIcon class="w-4 h-4 mr-3 text-gray-400" />
+                  <UserIcon class="w-5 h-5 mr-3 text-gray-400" />
                   Mi perfil
                 </router-link>
-                <hr class="my-1">
+                
+                <hr class="my-2 border-gray-100">
+                
                 <button
                   @click="handleSignOut"
-                  class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                  class="flex items-center w-full px-6 py-3 text-base text-red-600 hover:bg-red-50 transition-all duration-200"
                 >
-                  <ArrowRightOnRectangleIcon class="w-4 h-4 mr-3" />
+                  <ArrowRightOnRectangleIcon class="w-5 h-5 mr-3" />
                   Cerrar sesión
                 </button>
               </div>
@@ -106,87 +123,106 @@
 
           <!-- Usuario no autenticado -->
           <template v-else>
-            <router-link
-              to="/auth"
-              class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
-            >
-              Iniciar sesión
-            </router-link>
-            <router-link
-              to="/auth"
-              class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-medium rounded-lg hover:from-amber-600 hover:to-orange-600 transition-colors"
-            >
-              Registrarse
-            </router-link>
+            <div class="flex items-center space-x-4">
+              <router-link
+                to="/auth"
+                class="px-6 py-3 text-base font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all duration-300"
+              >
+                Iniciar sesión
+              </router-link>
+              <router-link
+                to="/auth"
+                class="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-base font-bold rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Registrarse
+              </router-link>
+            </div>
           </template>
 
           <!-- Botón menú móvil -->
           <button
             @click="showMobileMenu = !showMobileMenu"
-            class="lg:hidden p-2 text-gray-600 hover:text-gray-900 rounded-lg"
+            class="lg:hidden p-3 text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-50 transition-all duration-300"
           >
-            <Bars3Icon v-if="!showMobileMenu" class="w-6 h-6" />
-            <XMarkIcon v-else class="w-6 h-6" />
+            <Bars3Icon v-if="!showMobileMenu" class="w-7 h-7" />
+            <XMarkIcon v-else class="w-7 h-7" />
           </button>
         </div>
       </div>
 
       <!-- Menú móvil -->
-      <div v-if="showMobileMenu" class="lg:hidden border-t border-gray-200 bg-white py-2">
+      <div v-if="showMobileMenu" class="lg:hidden border-t border-gray-200 bg-white/95 backdrop-blur-xl py-4">
         <template v-if="props.user && authStore.isAuthenticated">
+          <!-- Mobile profile header -->
+          <div class="px-6 py-4 border-b border-gray-100 mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
+                <span class="text-white text-lg font-bold">
+                  {{ getUserInitials(props.user?.nombre_completo) }}
+                </span>
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900">{{ props.user?.nombre_completo || 'Usuario' }}</p>
+                <p class="text-sm text-orange-600 capitalize font-medium">{{ props.user?.rol || 'cliente' }}</p>
+              </div>
+            </div>
+          </div>
+          
           <router-link
             v-for="item in filteredNavigationItems"
             :key="item.name"
             :to="item.disabled ? '#' : item.to"
             :class="[
-              'flex items-center px-4 py-3 text-base font-medium',
+              'flex items-center px-6 py-4 text-base font-semibold mx-4 rounded-xl transition-all duration-300',
               item.disabled ? 'opacity-50 cursor-not-allowed' : '',
               isActiveRoute(item.to)
-                ? 'bg-amber-50 text-amber-700 border-l-4 border-amber-500'
+                ? 'bg-gradient-to-r from-orange-100 to-orange-50 text-orange-700 border border-orange-200'
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
             ]"
             @click="() => { if (!item.disabled) showMobileMenu = false; else $event.preventDefault(); }"
           >
-            <component :is="item.icon" class="w-5 h-5 mr-3" />
+            <component :is="item.icon" class="w-6 h-6 mr-4" />
             {{ item.name }}
           </router-link>
           
-          <hr class="my-2">
+          <hr class="my-4 border-gray-200">
           
           <router-link
             :to="profileRoute"
-            class="flex items-center px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+            class="flex items-center px-6 py-4 text-base font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-50 mx-4 rounded-xl transition-all duration-300"
             @click="showMobileMenu = false"
           >
-            <UserIcon class="w-5 h-5 mr-3" />
+            <UserIcon class="w-6 h-6 mr-4" />
             Mi perfil
           </router-link>
           
           <button
             @click="() => { showMobileMenu = false; handleSignOut(); }"
-            class="flex items-center w-full px-4 py-3 text-base font-medium text-red-600 hover:bg-red-50"
+            class="flex items-center w-full px-6 py-4 text-base font-semibold text-red-600 hover:bg-red-50 mx-4 rounded-xl transition-all duration-300"
           >
-            <ArrowRightOnRectangleIcon class="w-5 h-5 mr-3" />
+            <ArrowRightOnRectangleIcon class="w-6 h-6 mr-4" />
             Cerrar sesión
           </button>
         </template>
 
         <template v-else>
-          <router-link
-            to="/auth"
-            class="flex items-center px-4 py-3 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-            @click="showMobileMenu = false"
-          >
-            <UserIcon class="w-5 h-5 mr-3" />
-            Iniciar sesión
-          </router-link>
-          <router-link
-            to="/auth"
-            class="flex items-center px-4 py-3 text-base font-medium bg-gradient-to-r from-amber-500 to-orange-500 text-white mx-4 rounded-lg"
-            @click="showMobileMenu = false"
-          >
-            Registrarse
-          </router-link>
+          <div class="px-6 space-y-3">
+            <router-link
+              to="/auth"
+              class="flex items-center justify-center py-4 text-base font-semibold text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all duration-300"
+              @click="showMobileMenu = false"
+            >
+              <UserIcon class="w-6 h-6 mr-3" />
+              Iniciar sesión
+            </router-link>
+            <router-link
+              to="/auth"
+              class="flex items-center justify-center py-4 text-base font-bold bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              @click="showMobileMenu = false"
+            >
+              Registrarse
+            </router-link>
+          </div>
         </template>
       </div>
     </div>
