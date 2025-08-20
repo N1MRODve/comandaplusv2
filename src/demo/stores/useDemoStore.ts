@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { mockPedidos, actualizarEstadoPedidoMock, actualizarEstadoItemMock, obtenerItemsPorPedido, obtenerTodosLosItems } from '../data/mockPedidos'
-import { mockMesas, actualizarEstadoMesaMock, calcularOcupacionTotal, calcularCapacidadUtilizada, calcularIngresosDelDia, calcularRotacionDelDia, obtenerMesasMasRentables } from '../data/mockMesas'
+import { mockMesas, calcularOcupacionTotal, calcularCapacidadUtilizada, calcularIngresosDelDia, calcularRotacionDelDia, obtenerMesasMasRentables } from '../data/mockMesas'
 import { mockCategorias, mockPlatos, obtenerMenuCompleto, actualizarDisponibilidadPlatoMock, crearPlatoMock, actualizarPlatoMock, eliminarPlatoMock, crearCategoriaMock } from '../data/mockMenu'
 import { mockAnalytics, exportarDatosMock, obtenerOcupacionPorHoras, obtenerTiemposPorCapacidad, obtenerMetricasTiempo } from '../data/mockAnalytics'
 import type { MockPedido, MockItemPedido } from '../data/mockPedidos'
