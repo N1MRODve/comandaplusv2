@@ -381,7 +381,12 @@ export const useDemoStore = defineStore('demo', () => {
   const startRealTimeSimulation = () => {
     if (!simulateRealTime.value) return
     
-    setInterval(() => {
+    const interval = setInterval(() => {
+      if (!simulateRealTime.value) {
+        clearInterval(interval)
+        return
+      }
+      
       // Simular cambios aleatorios ocasionales
       if (Math.random() < 0.1) { // 10% de probabilidad cada 30 segundos
         simularCambioAleatorio()
@@ -390,6 +395,8 @@ export const useDemoStore = defineStore('demo', () => {
       // Actualizar tiempos transcurridos
       lastUpdate.value = new Date()
     }, 30000) // Cada 30 segundos
+    
+    return interval
   }
   
   const simularCambioAleatorio = () => {

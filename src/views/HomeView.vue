@@ -21,14 +21,20 @@
               to="/demo"
               class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-orange-600 transition-colors"
             >
-              Ver demo interactiva
+              🎯 Demo Completa
             </router-link>
-            <button 
-              @click="scrollToFeatures"
+            <router-link 
+              to="/demo-landing"
               class="border border-orange-200 text-orange-100 px-8 py-3 rounded-lg font-semibold hover:bg-orange-400 transition-colors"
             >
-              Ver características
-            </button>
+              📖 Guía de Demo
+            </router-link>
+            <router-link 
+              to="/demo-landing"
+              class="border border-orange-200 text-orange-100 px-8 py-3 rounded-lg font-semibold hover:bg-orange-400 transition-colors"
+            >
+              📖 Guía de Demo
+            </router-link>
           </div>
         </div>
       </div>

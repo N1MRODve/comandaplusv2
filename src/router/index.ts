@@ -11,6 +11,9 @@ import AuthView from '../views/AuthView.vue'
 import CreateProfileView from '../views/CreateProfileView.vue'
 import PerfilView from '../views/PerfilView.vue'
 import DemoView from '../views/DemoView.vue'
+import DemoLandingView from '../demo/views/DemoLandingView.vue'
+import DemoLayout from '../demo/views/DemoLayout.vue'
+import DemoMenuClienteView from '../demo/views/DemoMenuClienteView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +29,29 @@ const router = createRouter({
       name: 'demo',
       component: DemoView,
       meta: { requiresAuth: false }
+    },
+    {
+      path: '/demo-landing',
+      name: 'demo-landing',
+      component: DemoLandingView,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/demo-app',
+      component: DemoLayout,
+      meta: { requiresAuth: false },
+      children: [
+        {
+          path: '',
+          name: 'demo-dashboard',
+          component: DemoView
+        },
+        {
+          path: 'menu-cliente',
+          name: 'demo-menu-cliente',
+          component: DemoMenuClienteView
+        }
+      ]
     },
     {
       path: '/auth',
