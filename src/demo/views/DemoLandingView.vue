@@ -105,7 +105,6 @@
               </router-link>
             </div>
           </div>
-          </div>
           
           <router-link 
             to="/auth"
@@ -113,7 +112,145 @@
           >
             Crear Cuenta Gratis
           </router-link>
+        </div>
+      </div>
+    </div>
+
+    <!-- Demo Features Preview -->
+    <div class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            ¿Qué puedes probar en la demo?
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+            Una experiencia completa con datos reales simulados para que veas el potencial de ComandaPlus
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Dashboard Interactivo -->
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200 hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">Dashboard en Tiempo Real</h3>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                KPIs actualizados automáticamente
+              </li>
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                Pedidos activos en tiempo real
+              </li>
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                Productos más vendidos
+              </li>
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                Gráficos de ventas interactivos
+              </li>
+            </ul>
           </div>
+
+          <!-- Gestión de Pedidos -->
+          <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200 hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 0 012 2" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">Gestión de Pedidos</h3>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                Control total en tiempo real
+              </li>
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                Vista de cocina y barra
+              </li>
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                Gestión de items individuales
+              </li>
+              <li class="flex items-center">
+                <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                Alertas de tiempo crítico
+              </li>
+            </ul>
+          </div>
+
+          <!-- Control de Salón -->
+          <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-8 border border-purple-200 hover:shadow-xl transition-all duration-300">
+            <div class="w-16 h-16 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h3 class="text-white font-semibold mb-2">Control de Salón</h3>
+            <p class="text-orange-100 text-sm">Mesas y ocupación visual</p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+            Elige tu experiencia ComandaPlus
+          </h2>
+          <p class="text-xl text-orange-100 mb-8 max-w-3xl mx-auto">
+            Selecciona el tipo de negocio que mejor represente tu establecimiento
+          </p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mx-auto">
+            <!-- Demo Restaurante -->
+            <router-link 
+              :to="{ name: 'demo' }"
+              class="bg-white/95 backdrop-blur-md text-orange-600 p-8 rounded-2xl font-bold text-lg hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border border-white/20"
+            >
+              <div class="text-center">
+                <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Demo Restaurante</h3>
+                <p class="text-sm text-gray-600 mb-4">Gestión completa para restaurantes y comedores</p>
+                <div class="text-xs text-orange-600 font-medium">
+                  🍽️ Menú completo • 📊 Analytics • 🏪 Gestión de salón
+                </div>
+              </div>
+            </router-link>
+
+            <!-- Demo Bar -->
+            <router-link 
+              :to="{ name: 'demo-bar' }"
+              class="bg-white/95 backdrop-blur-md text-purple-600 p-8 rounded-2xl font-bold text-lg hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border border-white/20"
+            >
+              <div class="text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Demo Bar & Pub</h3>
+                <p class="text-sm text-gray-600 mb-4">Especializado en bares, pubs y coctelerías</p>
+                <div class="text-xs text-purple-600 font-medium">
+                  🍸 Cócteles • 🍺 Cervezas • 🫒 Tapas • 🌙 Horario nocturno
+                </div>
+              </div>
+            </router-link>
+          </div>
+
+          <router-link 
+            to="/auth"
+            class="inline-block border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-orange-600 transition-all duration-300 backdrop-blur-md mt-8"
+          >
+            Crear Cuenta Gratis
+          </router-link>
         </div>
       </div>
     </div>
