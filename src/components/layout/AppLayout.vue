@@ -34,7 +34,13 @@ const { showToast } = useToast()
 // Computed properties
 const showNavigation = computed(() => {
   // Rutas donde NO mostrar navegación
-  const routesWithoutNav = ['menu-digital', 'auth', 'create-profile']
+  const routesWithoutNav = ['menu-digital', 'auth', 'create-profile', 'demo-landing']
+  
+  // También ocultar navegación para todas las rutas que empiecen con 'demo-'
+  if (route.name && typeof route.name === 'string' && route.name.startsWith('demo-')) {
+    return false
+  }
+  
   return !routesWithoutNav.includes(route.name as string)
 })
 

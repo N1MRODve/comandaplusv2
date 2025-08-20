@@ -1,42 +1,25 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-stone-100">
-    <!-- Header de la Demo -->
-    <div class="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center py-4">
-          <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-              <span class="text-white font-bold text-lg">C+</span>
-            </div>
-            <div>
-              <h1 class="text-2xl font-bold text-gray-900">ComandaPlus Demo</h1>
-              <p class="text-sm text-gray-600">
-                Experiencia interactiva completa
-                <span class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  <div class="w-2 h-2 bg-green-400 rounded-full mr-1 animate-pulse"></div>
-                  Modo Demo
-                </span>
-              </p>
-            </div>
+    <!-- Selector de vista -->
+    <div class="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium text-gray-700">Vista:</span>
+            <select 
+              v-model="vistaActual"
+              class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            >
+              <option value="dashboard">📊 Dashboard</option>
+              <option value="pedidos">📋 Pedidos</option>
+              <option value="salon">🏪 Salón</option>
+              <option value="menu">📖 Menú</option>
+              <option value="analytics">📈 Analytics</option>
+            </select>
           </div>
           
-          <div class="flex items-center space-x-4">
-            <!-- Selector de vista -->
-            <div class="flex items-center space-x-2">
-              <span class="text-sm font-medium text-gray-700">Vista:</span>
-              <select 
-                v-model="vistaActual"
-                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
-              >
-                <option value="dashboard">📊 Dashboard</option>
-                <option value="pedidos">📋 Pedidos</option>
-                <option value="salon">🏪 Salón</option>
-                <option value="menu">📖 Menú</option>
-                <option value="analytics">📈 Analytics</option>
-              </select>
-            </div>
-            
-            <!-- Controles de la demo -->
+          <!-- Controles de la demo -->
+          <div class="flex items-center space-x-3">
             <button
               @click="toggleRealTimeSimulation"
               :class="[
@@ -48,30 +31,13 @@
             >
               {{ demoStore.simulateRealTime ? '⏸️ Pausar simulación' : '▶️ Activar simulación' }}
             </button>
-            
-            <button
-              @click="resetDemo"
-              class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors flex items-center space-x-2"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              <span>Resetear Demo</span>
-            </button>
-            
-            <router-link
-              to="/auth"
-              class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-2 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-colors font-medium shadow-lg"
-            >
-              Comenzar Gratis
-            </router-link>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Contenido principal -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <!-- Información de la demo -->
       <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 mb-8">
         <div class="flex items-start space-x-4">
@@ -135,33 +101,6 @@
         <DemoAnalytics />
       </div>
     </div>
-
-    <!-- Footer de la demo -->
-    <div class="bg-white border-t border-gray-200 mt-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="text-center">
-          <h3 class="text-xl font-semibold text-gray-900 mb-4">¿Te gusta lo que ves?</h3>
-          <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Esta es solo una muestra de las capacidades de ComandaPlus. 
-            Regístrate ahora y comienza a digitalizar tu restaurante en minutos.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <router-link
-              to="/auth"
-              class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-3 rounded-lg hover:from-amber-600 hover:to-orange-600 transition-colors font-semibold shadow-lg"
-            >
-              Comenzar Gratis
-            </router-link>
-            <button
-              @click="scrollToTop"
-              class="border-2 border-gray-300 text-gray-700 px-8 py-3 rounded-lg hover:bg-gray-50 transition-colors font-semibold"
-            >
-              Volver al inicio
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -192,6 +131,21 @@ const toggleRealTimeSimulation = () => {
 const resetDemo = () => {
   if (confirm('¿Estás seguro de que quieres resetear la demo? Se perderán todos los cambios realizados.')) {
     demoStore.resetearDemo()
+    
+    // Mostrar notificación
+    const notification = document.createElement('div')
+    notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300'
+    notification.textContent = '🔄 Demo reseteada correctamente'
+    document.body.appendChild(notification)
+    
+    setTimeout(() => {
+      notification.style.opacity = '0'
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification)
+        }
+      }, 300)
+    }, 2000)
   }
 }
 
@@ -203,10 +157,6 @@ const formatTime = (date: Date): string => {
   return new Intl.DateTimeFormat('es-ES', {
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
-  }).format(date)
-}
-
 // Lifecycle
 onMounted(() => {
   console.log('🎭 Demo iniciada')

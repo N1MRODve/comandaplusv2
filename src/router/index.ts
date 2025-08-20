@@ -10,9 +10,11 @@ import SalonView from '../views/SalonView.vue'
 import AuthView from '../views/AuthView.vue'
 import CreateProfileView from '../views/CreateProfileView.vue'
 import PerfilView from '../views/PerfilView.vue'
-import DemoView from '../views/DemoView.vue'
-import DemoLandingView from '../demo/views/DemoLandingView.vue'
+
+// Demo imports
 import DemoLayout from '../demo/views/DemoLayout.vue'
+import DemoLandingView from '../demo/views/DemoLandingView.vue'
+import DemoView from '../views/DemoView.vue'
 import DemoMenuClienteView from '../demo/views/DemoMenuClienteView.vue'
 
 const router = createRouter({
@@ -25,25 +27,44 @@ const router = createRouter({
       meta: { requiresAuth: false }
     },
     {
-      path: '/demo',
-      name: 'demo',
-      component: DemoView,
-      meta: { requiresAuth: false }
-    },
-    {
       path: '/demo-landing',
       name: 'demo-landing',
       component: DemoLandingView,
       meta: { requiresAuth: false }
     },
     {
-      path: '/demo-app',
+      path: '/demo',
       component: DemoLayout,
       meta: { requiresAuth: false },
       children: [
         {
           path: '',
+          name: 'demo',
+          component: DemoView
+        },
+        {
+          path: 'dashboard',
           name: 'demo-dashboard',
+          component: DemoView
+        },
+        {
+          path: 'pedidos',
+          name: 'demo-pedidos',
+          component: DemoView
+        },
+        {
+          path: 'salon',
+          name: 'demo-salon',
+          component: DemoView
+        },
+        {
+          path: 'menu',
+          name: 'demo-menu',
+          component: DemoView
+        },
+        {
+          path: 'analytics',
+          name: 'demo-analytics',
           component: DemoView
         },
         {
