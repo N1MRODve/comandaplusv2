@@ -391,7 +391,7 @@ export const mockMesas: MockMesa[] = [
   }
 ]
 
-// Funciones utilitarias para mesas (solo operaciones básicas)
+// Funciones utilitarias básicas para mesas
 export const obtenerMesasPorEstado = (estado: string): MockMesa[] => {
   return mockMesas.filter(mesa => mesa.estado === estado)
 }
