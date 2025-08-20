@@ -25,7 +25,7 @@
           </h1>
           
           <p class="text-xl md:text-2xl text-orange-100 mb-8 max-w-4xl mx-auto leading-relaxed">
-            Experimenta todas las funcionalidades de nuestra plataforma de gestión para restaurantes
+            Elige tu experiencia ComandaPlus y experimenta todas las funcionalidades
             <span class="block text-lg mt-2 text-orange-200">
               Sin registro • Sin configuración • 100% funcional
             </span>
@@ -65,6 +65,28 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+              <!-- Demo Restaurante -->
+              <router-link 
+                :to="{ name: 'demo' }"
+                class="bg-white/95 backdrop-blur-md text-orange-600 p-8 rounded-2xl font-bold text-lg hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border border-white/20"
+              >
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">Demo Restaurante</h3>
+                  <p class="text-sm text-gray-600 mb-4">Gestión completa para restaurantes y comedores</p>
+                  <div class="text-xs text-orange-600 font-medium">
+                    🍽️ Menú completo • 📊 Analytics • 🏪 Gestión de salón
+                  </div>
+                </div>
+              </router-link>
+
+              <!-- Demo Bar -->
+              <router-link 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
               <!-- Demo Restaurante -->
               <router-link 
@@ -270,7 +292,7 @@
           </div>
 
           <!-- Menú Digital -->
-          <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200 hover:shadow-xl transition-all duration-300 md:col-span-2 lg:col-span-1">
+          <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-2xl p-8 border border-teal-200 hover:shadow-xl transition-all duration-300">
             <div class="w-16 h-16 bg-teal-500 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg">
               <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -314,16 +336,16 @@
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div class="text-center">
-            <div class="text-3xl font-bold text-orange-600 mb-2">6</div>
+            <div class="text-3xl font-bold text-orange-600 mb-2">2</div>
+            <div class="text-sm text-gray-600">Tipos de Demo</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-600 mb-2">6</div>
             <div class="text-sm text-gray-600">Pedidos Activos</div>
           </div>
           <div class="text-center">
-            <div class="text-3xl font-bold text-purple-600 mb-2">15</div>
+            <div class="text-3xl font-bold text-green-600 mb-2">15</div>
             <div class="text-sm text-gray-600">Mesas Configuradas</div>
-          </div>
-          <div class="text-center">
-            <div class="text-3xl font-bold text-green-600 mb-2">16</div>
-            <div class="text-sm text-gray-600">Platos en Menú</div>
           </div>
           <div class="text-center">
             <div class="text-3xl font-bold text-blue-600 mb-2">4</div>
@@ -375,18 +397,29 @@
         <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl p-8 text-white">
           <h3 class="text-xl font-bold mb-4">¿Listo para empezar?</h3>
           <p class="text-orange-100 mb-6">
-            La demo incluye datos realistas de un restaurante en funcionamiento. 
-            Todos los cambios que hagas se guardan temporalmente y se resetean al recargar la página.
+            Elige entre la demo de restaurante o la demo de bar para ver cómo ComandaPlus se adapta a tu tipo de negocio.
+            Ambas incluyen datos realistas y funcionalidad completa.
           </p>
-          <router-link 
-            :to="{ name: 'demo' }"
-            class="inline-flex items-center bg-white text-orange-600 px-8 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors shadow-lg"
-          >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Comenzar Demo Interactiva
-          </router-link>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <router-link 
+              :to="{ name: 'demo' }"
+              class="inline-flex items-center bg-white text-orange-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors shadow-lg"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
+              </svg>
+              🍽️ Demo Restaurante
+            </router-link>
+            <router-link 
+              :to="{ name: 'demo-bar' }"
+              class="inline-flex items-center bg-purple-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-purple-600 transition-colors shadow-lg"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+              🍸 Demo Bar & Pub
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
