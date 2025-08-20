@@ -108,7 +108,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useDemoStore } from '@/demo/stores/useDemoStore'
 
-// Componentes de demo (los crearemos a continuación)
+// Componentes de demo
 import DemoDashboard from '@/demo/components/DemoDashboard.vue'
 import DemoPedidos from '@/demo/components/DemoPedidos.vue'
 import DemoSalon from '@/demo/components/DemoSalon.vue'
@@ -128,35 +128,14 @@ const toggleRealTimeSimulation = () => {
   }
 }
 
-const resetDemo = () => {
-  if (confirm('¿Estás seguro de que quieres resetear la demo? Se perderán todos los cambios realizados.')) {
-    demoStore.resetearDemo()
-    
-    // Mostrar notificación
-    const notification = document.createElement('div')
-    notification.className = 'fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300'
-    notification.textContent = '🔄 Demo reseteada correctamente'
-    document.body.appendChild(notification)
-    
-    setTimeout(() => {
-      notification.style.opacity = '0'
-      setTimeout(() => {
-        if (document.body.contains(notification)) {
-          document.body.removeChild(notification)
-        }
-      }, 300)
-    }, 2000)
-  }
-}
-
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
 const formatTime = (date: Date): string => {
   return new Intl.DateTimeFormat('es-ES', {
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit'
+  }).format(date)
+}
+
 // Lifecycle
 onMounted(() => {
   console.log('🎭 Demo iniciada')

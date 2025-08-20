@@ -1,40 +1,29 @@
 <template>
   <div class="min-h-screen bg-gray-50 flex flex-col">
     <!-- Demo Banner - Fixed at top -->
-    <div class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-3 shadow-lg sticky top-0 z-50">
+    <div class="bg-gray-900 text-white px-4 py-2 shadow-sm sticky top-0 z-50 border-b border-gray-700">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <span class="text-white font-bold">C+</span>
-            </div>
-            <div>
-              <span class="font-bold text-lg">ComandaPlus Demo</span>
-              <div class="text-xs text-orange-100">Demostración Interactiva</div>
-            </div>
-          </div>
-          
-          <div class="hidden sm:flex items-center space-x-2 px-3 py-1 bg-white/20 rounded-full text-sm">
-            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span>Estás viendo una demostración • Los datos son ficticios</span>
-          </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-2 h-2 bg-yellow-400 rounded-full"></div>
+          <span class="text-sm font-medium">Estás en el Modo Demostración</span>
+          <span class="hidden sm:inline text-xs text-gray-400">• Los datos son ficticios</span>
         </div>
         
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2">
           <!-- Navigation within demo -->
-          <div class="hidden md:flex items-center space-x-1">
+          <div class="hidden lg:flex items-center space-x-1">
             <router-link
               v-for="item in demoNavigationItems"
               :key="item.name"
               :to="item.to"
               :class="[
-                'px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200',
+                'px-2 py-1 rounded text-xs font-medium transition-colors',
                 isActiveRoute(item.to) 
-                  ? 'bg-white/30 text-white border border-white/30' 
-                  : 'text-orange-100 hover:text-white hover:bg-white/20'
+                  ? 'bg-gray-700 text-white' 
+                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
               ]"
             >
-              <component :is="item.icon" class="w-4 h-4 mr-1.5 inline" />
+              <component :is="item.icon" class="w-3 h-3 mr-1 inline" />
               {{ item.name }}
             </router-link>
           </div>
@@ -42,10 +31,10 @@
           <!-- Reset demo button -->
           <button
             @click="resetDemo"
-            class="px-3 py-1.5 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-colors text-sm font-medium"
+            class="px-2 py-1 bg-gray-800 text-gray-300 rounded text-xs hover:bg-gray-700 hover:text-white transition-colors"
             title="Resetear demo"
           >
-            <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3 h-3 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
             Resetear
@@ -54,15 +43,15 @@
           <!-- Exit demo button -->
           <router-link
             to="/"
-            class="px-4 py-1.5 bg-white text-orange-600 rounded-lg hover:bg-gray-100 transition-colors font-semibold text-sm shadow-sm"
+            class="px-3 py-1 bg-white text-gray-900 rounded text-sm font-medium hover:bg-gray-100 transition-colors"
           >
-            Volver a la web principal
+            Salir de la Demo
           </router-link>
 
           <!-- Mobile menu button -->
           <button
             @click="showMobileMenu = !showMobileMenu"
-            class="md:hidden p-2 text-white hover:bg-white/20 rounded-lg"
+            class="lg:hidden p-1 text-gray-300 hover:text-white hover:bg-gray-800 rounded"
           >
             <svg v-if="!showMobileMenu" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -75,17 +64,17 @@
       </div>
 
       <!-- Mobile menu -->
-      <div v-if="showMobileMenu" class="md:hidden border-t border-white/20 mt-3 pt-3">
+      <div v-if="showMobileMenu" class="lg:hidden border-t border-gray-700 mt-2 pt-2">
         <div class="space-y-2">
           <router-link
             v-for="item in demoNavigationItems"
             :key="item.name"
             :to="item.to"
             :class="[
-              'flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              'flex items-center px-3 py-2 rounded text-sm font-medium transition-colors',
               isActiveRoute(item.to)
-                ? 'bg-white/30 text-white'
-                : 'text-orange-100 hover:text-white hover:bg-white/20'
+                ? 'bg-gray-700 text-white'
+                : 'text-gray-300 hover:text-white hover:bg-gray-800'
             ]"
             @click="showMobileMenu = false"
           >
@@ -93,11 +82,11 @@
             {{ item.name }}
           </router-link>
           
-          <hr class="border-white/20 my-2">
+          <hr class="border-gray-700 my-2">
           
           <button
             @click="() => { showMobileMenu = false; resetDemo(); }"
-            class="flex items-center w-full px-3 py-2 text-orange-100 hover:text-white hover:bg-white/20 rounded-lg text-sm font-medium"
+            class="flex items-center w-full px-3 py-2 text-gray-300 hover:text-white hover:bg-gray-800 rounded text-sm font-medium"
           >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -107,10 +96,10 @@
           
           <router-link
             to="/"
-            class="flex items-center w-full px-3 py-2 bg-white text-orange-600 rounded-lg font-semibold text-sm"
+            class="flex items-center w-full px-3 py-2 bg-white text-gray-900 rounded font-medium text-sm"
             @click="showMobileMenu = false"
           >
-            Volver a la web principal
+            Salir de la Demo
           </router-link>
         </div>
       </div>
@@ -122,29 +111,17 @@
     </main>
 
     <!-- Demo Footer -->
-    <footer class="bg-white border-t border-gray-200 py-4">
+    <footer class="bg-white border-t border-gray-200 py-3">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row items-center justify-between">
-          <div class="flex items-center space-x-4 mb-2 md:mb-0">
-            <div class="flex items-center space-x-2 text-sm text-gray-600">
-              <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span>Demo Activa</span>
-            </div>
-            <div class="text-sm text-gray-500">
-              Última actualización: {{ formatTime(lastUpdate) }}
-            </div>
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-gray-500">
+            Última actualización: {{ formatTime(lastUpdate) }}
           </div>
           
-          <div class="flex items-center space-x-3">
-            <button
-              @click="resetDemo"
-              class="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              🔄 Resetear
-            </button>
+          <div class="flex items-center space-x-2">
             <router-link
               to="/auth"
-              class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium"
+              class="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600 transition-colors text-xs font-medium"
             >
               Crear Cuenta Real
             </router-link>
