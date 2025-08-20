@@ -17,9 +17,15 @@
             >
               Comenzar ahora
             </router-link>
+            <router-link 
+              to="/demo"
+              class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-orange-600 transition-colors"
+            >
+              Ver demo interactiva
+            </router-link>
             <button 
               @click="scrollToFeatures"
-              class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-orange-600 transition-colors"
+              class="border border-orange-200 text-orange-100 px-8 py-3 rounded-lg font-semibold hover:bg-orange-400 transition-colors"
             >
               Ver características
             </button>
@@ -275,11 +281,17 @@
           >
             Empezar gratis
           </router-link>
-          <button 
-            @click="scrollToTop"
+          <router-link 
+            to="/demo"
             class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-orange-600 transition-colors"
           >
-            Solicitar demo
+            Probar demo
+          </router-link>
+          <button 
+            @click="scrollToTop"
+            class="border border-orange-200 text-orange-100 px-8 py-3 rounded-lg font-semibold hover:bg-orange-400 transition-colors"
+          >
+            Contactar
           </button>
         </div>
         <p class="text-orange-200 text-sm mt-4">

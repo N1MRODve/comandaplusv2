@@ -10,6 +10,7 @@ import SalonView from '../views/SalonView.vue'
 import AuthView from '../views/AuthView.vue'
 import CreateProfileView from '../views/CreateProfileView.vue'
 import PerfilView from '../views/PerfilView.vue'
+import DemoView from '../views/DemoView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +19,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/demo',
+      name: 'demo',
+      component: DemoView,
       meta: { requiresAuth: false }
     },
     {
