@@ -479,3 +479,75 @@ export const obtenerMetricasTiempo = () => {
 }
 
 export default mockAnalytics
+
+// Métricas adicionales para el salón
+export const obtenerOcupacionPorHoras = () => {
+  return Array.from({ length: 24 }, (_, hora) => {
+    let porcentaje = 0
+    let mesas_ocupadas = 0
+    
+    // Simular patrones de ocupación realistas
+    if (hora >= 12 && hora <= 16) {
+      // Hora de comida
+      porcentaje = Math.random() * 40 + 40 // 40-80%
+      mesas_ocupadas = Math.round((porcentaje / 100) * 15)
+    } else if (hora >= 20 && hora <= 23) {
+      // Hora de cena
+      porcentaje = Math.random() * 30 + 60 // 60-90%
+      mesas_ocupadas = Math.round((porcentaje / 100) * 15)
+    } else if (hora >= 8 && hora <= 11) {
+      // Desayuno
+      porcentaje = Math.random() * 20 + 10 // 10-30%
+      mesas_ocupadas = Math.round((porcentaje / 100) * 15)
+    } else if (hora >= 17 && hora <= 19) {
+      // Aperitivo
+      porcentaje = Math.random() * 25 + 25 // 25-50%
+      mesas_ocupadas = Math.round((porcentaje / 100) * 15)
+    }
+    
+    return {
+      hora,
+      porcentaje: Math.round(porcentaje),
+      mesas_ocupadas
+    }
+  })
+}
+
+export const obtenerTiemposPorCapacidad = () => {
+  return [
+    {
+      personas: 2,
+      tiempo_promedio: 38,
+      servicios_completados: 24,
+      rotacion_dia: 4.8
+    },
+    {
+      personas: 4,
+      tiempo_promedio: 52,
+      servicios_completados: 18,
+      rotacion_dia: 3.6
+    },
+    {
+      personas: 6,
+      tiempo_promedio: 68,
+      servicios_completados: 8,
+      rotacion_dia: 2.7
+    },
+    {
+      personas: 8,
+      tiempo_promedio: 85,
+      servicios_completados: 3,
+      rotacion_dia: 1.5
+    }
+  ]
+}
+
+export const obtenerMetricasTiempo = () => {
+  return {
+    tiempo_promedio_global: 48,
+    tiempo_maximo_hoy: 95,
+    tiempo_minimo_hoy: 25,
+    rotacion_promedio: 3.2,
+    eficiencia_salon: 78.5
+  }
+}
