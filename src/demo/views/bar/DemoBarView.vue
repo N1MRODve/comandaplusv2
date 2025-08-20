@@ -1,4 +1,4 @@
-template>
+<template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-stone-100">
     <!-- Selector de vista -->
     <div class="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 sticky top-0 z-40">
