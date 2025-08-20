@@ -17,15 +17,22 @@
               :key="item.name"
               :to="item.to"
               :class="[
-                'px-2 py-1 rounded text-xs font-medium transition-colors',
+                'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                 isActiveRoute(item.to) 
-                  ? 'bg-gray-700 text-white' 
-                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                  ? 'bg-white/20 text-white' 
+                  : 'text-gray-300 hover:text-white hover:bg-white/10'
               ]"
             >
               <component :is="item.icon" class="w-3 h-3 mr-1 inline" />
               {{ item.name }}
             </router-link>
+            
+            <!-- Demo type indicator -->
+            <div class="ml-4 px-3 py-1.5 bg-white/10 rounded-md">
+              <span class="text-xs font-medium text-gray-300">
+                {{ isDemoBar.value ? '🍸 Bar Demo' : '🍽️ Restaurante Demo' }}
+              </span>
+            </div>
           </div>
           
           <!-- Reset demo button -->
@@ -147,6 +154,11 @@ const DevicePhoneMobileIcon = { template: `<svg class="w-4 h-4" fill="none" stro
 
 const route = useRoute()
 const demoStore = useDemoStore()
+
+// Detectar si estamos en demo de bar
+const isDemoBar = computed(() => {
+  return route.path.startsWith('/demo-bar')
+})
 
 const showMobileMenu = ref(false)
 const lastUpdate = computed(() => demoStore.lastUpdate)

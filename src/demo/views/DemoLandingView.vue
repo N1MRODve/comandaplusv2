@@ -65,15 +65,71 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <router-link 
-              :to="{ name: 'demo' }"
-              class="bg-white text-orange-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105"
-            >
-              🚀 Comenzar Demo
-            </router-link>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+              <!-- Demo Restaurante -->
+              <router-link 
+                :to="{ name: 'demo' }"
+                class="bg-white/95 backdrop-blur-md text-orange-600 p-8 rounded-2xl font-bold text-lg hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border border-white/20"
+              >
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">Demo Restaurante</h3>
+                  <p class="text-sm text-gray-600 mb-4">Gestión completa para restaurantes y comedores</p>
+                  <div class="text-xs text-orange-600 font-medium">
+                    🍽️ Menú completo • 📊 Analytics • 🏪 Gestión de salón
+                  </div>
+                </div>
+              </router-link>
+
+              <!-- Demo Bar -->
+              <router-link 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+              <!-- Demo Restaurante -->
+              <router-link 
+                :to="{ name: 'demo' }"
+                class="bg-white/95 backdrop-blur-md text-orange-600 p-8 rounded-2xl font-bold text-lg hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border border-white/20"
+              >
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">Demo Restaurante</h3>
+                  <p class="text-sm text-gray-600 mb-4">Gestión completa para restaurantes y comedores</p>
+                  <div class="text-xs text-orange-600 font-medium">
+                    🍽️ Menú completo • 📊 Analytics • 🏪 Gestión de salón
+                  </div>
+                </div>
+              </router-link>
+
+              <!-- Demo Bar -->
+              <router-link 
+                :to="{ name: 'demo-bar' }"
+                class="bg-white/95 backdrop-blur-md text-purple-600 p-8 rounded-2xl font-bold text-lg hover:bg-white transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105 border border-white/20"
+              >
+                <div class="text-center">
+                  <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-900 mb-2">Demo Bar & Pub</h3>
+                  <p class="text-sm text-gray-600 mb-4">Especializado en bares, pubs y coctelerías</p>
+                  <div class="text-xs text-purple-600 font-medium">
+                    🍸 Cócteles • 🍺 Cervezas • 🫒 Tapas • 🌙 Horario nocturno
+                  </div>
+                </div>
+              </router-link>
+            </div>
+            
             <router-link 
               to="/auth"
-              class="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-orange-600 transition-all duration-300 backdrop-blur-md"
+              class="border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-orange-600 transition-all duration-300 backdrop-blur-md mt-4"
             >
               Crear Cuenta Gratis
             </router-link>

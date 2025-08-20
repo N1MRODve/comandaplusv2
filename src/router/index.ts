@@ -75,6 +75,43 @@ const router = createRouter({
       ]
     },
     {
+      path: '/demo-bar',
+      component: DemoLayout,
+      meta: { requiresAuth: false },
+      children: [
+        {
+          path: '',
+          name: 'demo-bar',
+          component: () => import('../demo/views/bar/DemoBarView.vue')
+        },
+        {
+          path: 'dashboard',
+          name: 'demo-bar-dashboard',
+          component: () => import('../demo/views/bar/DemoBarView.vue')
+        },
+        {
+          path: 'pedidos',
+          name: 'demo-bar-pedidos',
+          component: () => import('../demo/views/bar/DemoBarView.vue')
+        },
+        {
+          path: 'salon',
+          name: 'demo-bar-salon',
+          component: () => import('../demo/views/bar/DemoBarView.vue')
+        },
+        {
+          path: 'menu',
+          name: 'demo-bar-menu',
+          component: () => import('../demo/views/bar/DemoBarView.vue')
+        },
+        {
+          path: 'analytics',
+          name: 'demo-bar-analytics',
+          component: () => import('../demo/views/bar/DemoBarView.vue')
+        }
+      ]
+    },
+    {
       path: '/auth',
       name: 'auth',
       component: AuthView,
@@ -162,6 +199,45 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       redirect: '/'
+    }
+  ]
+})
+
+// Demo Bar routes
+router.addRoute({
+  path: '/demo-bar',
+  component: () => import('../demo/views/DemoLayout.vue'),
+  meta: { requiresAuth: false },
+  children: [
+    {
+      path: '',
+      name: 'demo-bar',
+      component: () => import('../demo/views/bar/DemoBarView.vue')
+    },
+    {
+      path: 'dashboard',
+      name: 'demo-bar-dashboard',
+      component: () => import('../demo/views/bar/DemoBarView.vue')
+    },
+    {
+      path: 'pedidos',
+      name: 'demo-bar-pedidos',
+      component: () => import('../demo/views/bar/DemoBarView.vue')
+    },
+    {
+      path: 'salon',
+      name: 'demo-bar-salon',
+      component: () => import('../demo/views/bar/DemoBarView.vue')
+    },
+    {
+      path: 'menu',
+      name: 'demo-bar-menu',
+      component: () => import('../demo/views/bar/DemoBarView.vue')
+    },
+    {
+      path: 'analytics',
+      name: 'demo-bar-analytics',
+      component: () => import('../demo/views/bar/DemoBarView.vue')
     }
   ]
 })
