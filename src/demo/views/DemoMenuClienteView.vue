@@ -355,6 +355,24 @@
         </div>
       </div>
     </div>
+
+    <!-- Estado del pedido -->
+    <div v-if="pedidoRealizado && pedidoActual" class="mt-8 p-6 bg-white rounded-lg shadow-md border border-gray-200">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Gracias por tu pedido!</h2>
+      <p class="text-gray-600 mb-6">Estamos preparando tu comida. Puedes ver el estado a continuación:</p>
+      <div class="flex items-center justify-center p-4 bg-blue-50 rounded-lg">
+        <span class="text-lg font-semibold text-blue-800">Estado:</span>
+        <span class="ml-3 px-4 py-1 text-lg font-bold text-white rounded-full"
+              :class="{
+                'bg-gray-500': pedidoActual.estado === 'pendiente',
+                'bg-orange-500': pedidoActual.estado === 'en_preparacion',
+                'bg-green-500': pedidoActual.estado === 'listo'
+              }">
+          {{ pedidoActual.estado }}
+        </span>
+      </div>
+      <p class="text-center text-sm text-gray-500 mt-4">Esta ventana se actualizará automáticamente.</p>
+    </div>
   </div>
 </template>
 
@@ -369,6 +387,17 @@ const mostrarCarrito = ref(false)
 const activeCategoryId = ref('')
 const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
+
+// Estado del seguimiento de pedidos
+const pedidoRealizado = ref(false)
+const pedidoId = ref<number | null>(null)
+
+// Creamos una propiedad computada que encontrará el pedido actual del cliente
+// y se actualizará automáticamente cuando el store cambie.
+const pedidoActual = computed(() => {
+  if (!pedidoId.value) return null
+  return demoStore.pedidos.find((p) => p.id === pedidoId.value)
+})
 
 // Estado del seguimiento de pedidos
 const pedidoActual = ref<any>(null)
@@ -474,6 +503,7 @@ const eliminarDelCarrito = (index: number) => {
 const realizarPedidoDemo = () => {
   if (carritoItems.value.length === 0) return
   
+  // La función createOrder ahora devuelve el pedido que acaba de crear
   const nuevoPedido = demoStore.crearPedidoConSimulacion({
     numero_mesa: '5',
     cliente_nombre: 'Cliente Demo',
@@ -483,22 +513,8 @@ const realizarPedidoDemo = () => {
     comensales: 2
   })
   
-  // Activar seguimiento del pedido
-  pedidoActual.value = nuevoPedido
-  mostrandoSeguimiento.value = true
-  pedidoCompletado.value = false
-  
-  // Configurar watcher para detectar cuando el pedido se complete
-  const checkCompletion = setInterval(() => {
-    const pedidoEnStore = demoStore.pedidos.find(p => p.id === nuevoPedido.id)
-    if (pedidoEnStore) {
-      pedidoActual.value = pedidoEnStore
-      if (pedidoEnStore.estado === 'entregado') {
-        pedidoCompletado.value = true
-        clearInterval(checkCompletion)
-      }
-    }
-  }, 1000)
+  pedidoId.value = nuevoPedido.id // Guardamos el ID
+  pedidoRealizado.value = true // Activamos la UI de seguimiento
   
   carritoItems.value = []
   mostrarCarrito.value = false
