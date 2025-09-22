@@ -239,7 +239,11 @@ import { useRoute } from 'vue-router'
 import { useDemoStore } from '@/demo/stores/useDemoStore'
 
 const demoStore = useDemoStore()
+const route = useRoute()
 const notificacionesAbiertas = ref(false)
+const showMobileMenu = ref(false)
+const lastUpdate = computed(() => demoStore.lastUpdate)
+
 // Iconos simplificados
 const HomeIcon = { template: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>`}
 const ClipboardDocumentListIcon = { template: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>`}
@@ -248,18 +252,26 @@ const ChartBarIcon = { template: `<svg class="w-4 h-4" fill="none" stroke="curre
 const SalonIcon = { template: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`}
 const DevicePhoneMobileIcon = { template: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>`}
 
-const route = useRoute()
-const { useDemoStore } = await import('@/demo/stores/useDemoStore')
-const demoStore = useDemoStore()
-const notificacionesAbiertas = ref(false)
-
 // Detectar si estamos en demo de bar
 const isDemoBar = computed(() => {
   return route.path.startsWith('/demo-bar')
 })
 
-const showMobileMenu = ref(false)
-const lastUpdate = computed(() => demoStore.lastUpdate)
+const demoNavigationItems = [
+  { name: 'Dashboard', to: { name: 'demo-dashboard' }, icon: HomeIcon },
+  { name: 'Pedidos', to: { name: 'demo-pedidos' }, icon: ClipboardDocumentListIcon },
+  { name: 'Salón', to: { name: 'demo-salon' }, icon: SalonIcon },
+  { name: 'Menú', to: { name: 'demo-menu' }, icon: BookOpenIcon },
+  { name: 'Analytics', to: { name: 'demo-analytics' }, icon: ChartBarIcon },
+  { name: 'Menú Cliente', to: { name: 'demo-menu-cliente' }, icon: DevicePhoneMobileIcon }
+]
+
+const isActiveRoute = (to: any) => {
+  if (typeof to === 'object' && to.name) {
+    return route.name === to.name
+  }
+  return false
+}
 
 const formatearTiempoSolicitud = (timestamp: Date): string => {
   const ahora = new Date()
@@ -278,22 +290,6 @@ const resolverSolicitudYCerrar = (solicitudId: number) => {
   demoStore.resolverSolicitud(solicitudId)
   // Opcional: cerrar el dropdown después de resolver
   // notificacionesAbiertas.value = false
-}
-
-const demoNavigationItems = [
-  { name: 'Dashboard', to: { name: 'demo-dashboard' }, icon: HomeIcon },
-  { name: 'Pedidos', to: { name: 'demo-pedidos' }, icon: ClipboardDocumentListIcon },
-  { name: 'Salón', to: { name: 'demo-salon' }, icon: SalonIcon },
-  { name: 'Menú', to: { name: 'demo-menu' }, icon: BookOpenIcon },
-  { name: 'Analytics', to: { name: 'demo-analytics' }, icon: ChartBarIcon },
-  { name: 'Menú Cliente', to: { name: 'demo-menu-cliente' }, icon: DevicePhoneMobileIcon }
-]
-
-const isActiveRoute = (to: any) => {
-  if (typeof to === 'object' && to.name) {
-    return route.name === to.name
-  }
-  return false
 }
 
 const resetDemo = () => {
