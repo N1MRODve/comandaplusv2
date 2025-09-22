@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Analytics</h1>
     <!-- Controles de período -->
     <div class="demo-card p-6">
       <div class="flex flex-wrap items-center justify-between gap-4">
