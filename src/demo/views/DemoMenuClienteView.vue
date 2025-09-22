@@ -459,7 +459,6 @@ const mostrarCarrito = ref(false)
 const activeCategoryId = ref('')
 const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
-const pedidoActual = ref<any>(null)
 const mostrandoSeguimiento = ref(false)
 
 // Computed
