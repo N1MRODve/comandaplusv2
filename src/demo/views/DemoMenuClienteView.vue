@@ -246,6 +246,96 @@
       </button>
     </div>
 
+    <!-- Seguimiento del pedido en tiempo real -->
+    <div 
+      v-if="mostrandoSeguimiento && pedidoActual"
+      class="fixed bottom-6 left-4 right-4 z-50 max-w-md mx-auto"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+        <!-- Header del seguimiento -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 text-white">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-bold text-lg">Seguimiento del Pedido</h3>
+              <p class="text-blue-100 text-sm">{{ pedidoActual.numero_pedido }}</p>
+            </div>
+            <button 
+              @click="cerrarSeguimiento"
+              class="text-blue-100 hover:text-white transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Estado actual del pedido -->
+        <div class="p-6">
+          <div class="flex items-center space-x-4 mb-4">
+            <div :class="[
+              'w-12 h-12 rounded-full flex items-center justify-center',
+              getEstadoColor(pedidoActual.estado)
+            ]">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getEstadoIcon(pedidoActual.estado)" />
+              </svg>
+            </div>
+            <div>
+              <h4 class="font-bold text-gray-900 text-lg">{{ getEstadoTexto(pedidoActual.estado) }}</h4>
+              <p class="text-gray-600 text-sm">{{ getEstadoDescripcion(pedidoActual.estado) }}</p>
+            </div>
+          </div>
+
+          <!-- Timeline del pedido -->
+          <div class="space-y-3">
+            <div 
+              v-for="(etapa, index) in etapasPedido" 
+              :key="index"
+              class="flex items-center space-x-3"
+            >
+              <div :class="[
+                'w-3 h-3 rounded-full flex-shrink-0',
+                esEtapaCompletada(etapa.estado) ? 'bg-green-500' : 
+                esEtapaActual(etapa.estado) ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'
+              ]"></div>
+              <div class="flex-1">
+                <p :class="[
+                  'text-sm font-medium',
+                  esEtapaCompletada(etapa.estado) ? 'text-green-700' :
+                  esEtapaActual(etapa.estado) ? 'text-blue-700' : 'text-gray-500'
+                ]">
+                  {{ etapa.nombre }}
+                </p>
+                <p class="text-xs text-gray-500">{{ etapa.descripcion }}</p>
+              </div>
+              <div v-if="esEtapaCompletada(etapa.estado)" class="flex-shrink-0">
+                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Información adicional -->
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Mesa:</span>
+              <span class="font-medium">{{ pedidoActual.numero_mesa }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Total:</span>
+              <span class="font-bold">€{{ pedidoActual.total.toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-600">Tiempo estimado:</span>
+              <span class="font-medium">{{ getTiempoEstimado(pedidoActual.estado) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal del carrito -->
     <div v-if="mostrarCarrito" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end justify-center">
       <div class="bg-white rounded-t-xl max-w-md w-full max-h-[95vh] flex flex-col">
@@ -369,12 +459,43 @@ const mostrarCarrito = ref(false)
 const activeCategoryId = ref('')
 const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
+const pedidoActual = ref<any>(null)
+const mostrandoSeguimiento = ref(false)
 
 // Computed
 const menuData = computed(() => demoStore.getMenuData())
 const totalCarrito = computed(() => 
   carritoItems.value.reduce((total, item) => total + (item.precio * item.cantidad), 0)
 )
+
+// Estados del pedido para el timeline
+const etapasPedido = computed(() => [
+  {
+    estado: 'pendiente',
+    nombre: 'Pedido recibido',
+    descripcion: 'Tu pedido ha sido confirmado'
+  },
+  {
+    estado: 'confirmado',
+    nombre: 'Confirmado',
+    descripcion: 'El restaurante ha confirmado tu pedido'
+  },
+  {
+    estado: 'en_preparacion',
+    nombre: 'En preparación',
+    descripcion: 'Los chefs están preparando tu comida'
+  },
+  {
+    estado: 'listo',
+    nombre: 'Listo para servir',
+    descripcion: 'Tu pedido está listo, el camarero lo llevará pronto'
+  },
+  {
+    estado: 'entregado',
+    nombre: 'Entregado',
+    descripcion: '¡Disfruta tu comida!'
+  }
+])
 
 // Métodos
 const scrollToCategory = (categoriaId: string) => {
@@ -438,7 +559,7 @@ const eliminarDelCarrito = (index: number) => {
 
 const realizarPedidoDemo = () => {
   // Simular creación de pedido
-  const nuevoPedido = demoStore.crearPedidoDemo({
+  const nuevoPedido = demoStore.crearPedidoConSimulacion({
     numero_mesa: '5',
     cliente_nombre: 'Cliente Demo',
     items: carritoItems.value,
@@ -452,6 +573,10 @@ const realizarPedidoDemo = () => {
   // Limpiar carrito
   carritoItems.value = []
   mostrarCarrito.value = false
+  
+  // Mostrar seguimiento del pedido
+  pedidoActual.value = nuevoPedido
+  mostrandoSeguimiento.value = true
 }
 
 const mostrarNotificacion = (mensaje: string, tipo: 'success' | 'warning' | 'error') => {
@@ -474,6 +599,81 @@ const mostrarNotificacion = (mensaje: string, tipo: 'success' | 'warning' | 'err
       }
     }, 300)
   }, 3000)
+}
+
+// Métodos para el seguimiento del pedido
+const getEstadoTexto = (estado: string): string => {
+  const textos: Record<string, string> = {
+    'pendiente': 'Pedido Recibido',
+    'confirmado': 'Confirmado',
+    'en_preparacion': 'En Preparación',
+    'listo': 'Listo para Servir',
+    'entregado': 'Entregado'
+  }
+  return textos[estado] || estado
+}
+
+const getEstadoDescripcion = (estado: string): string => {
+  const descripciones: Record<string, string> = {
+    'pendiente': 'Tu pedido ha sido recibido correctamente',
+    'confirmado': 'El restaurante ha confirmado tu pedido',
+    'en_preparacion': 'Los chefs están preparando tu comida',
+    'listo': 'Tu pedido está listo para servir',
+    'entregado': '¡Disfruta tu comida!'
+  }
+  return descripciones[estado] || ''
+}
+
+const getEstadoColor = (estado: string): string => {
+  const colores: Record<string, string> = {
+    'pendiente': 'bg-orange-500',
+    'confirmado': 'bg-yellow-500',
+    'en_preparacion': 'bg-blue-500',
+    'listo': 'bg-green-500',
+    'entregado': 'bg-gray-500'
+  }
+  return colores[estado] || 'bg-gray-500'
+}
+
+const getEstadoIcon = (estado: string): string => {
+  const iconos: Record<string, string> = {
+    'pendiente': 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+    'confirmado': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+    'en_preparacion': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+    'listo': 'M5 13l4 4L19 7',
+    'entregado': 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
+  }
+  return iconos[estado] || 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
+}
+
+const getTiempoEstimado = (estado: string): string => {
+  const tiempos: Record<string, string> = {
+    'pendiente': '2-3 minutos',
+    'confirmado': '8-12 minutos',
+    'en_preparacion': '15-20 minutos',
+    'listo': '2-5 minutos',
+    'entregado': 'Completado'
+  }
+  return tiempos[estado] || 'Calculando...'
+}
+
+const esEtapaCompletada = (estadoEtapa: string): boolean => {
+  if (!pedidoActual.value) return false
+  
+  const ordenEstados = ['pendiente', 'confirmado', 'en_preparacion', 'listo', 'entregado']
+  const indiceActual = ordenEstados.indexOf(pedidoActual.value.estado)
+  const indiceEtapa = ordenEstados.indexOf(estadoEtapa)
+  
+  return indiceEtapa < indiceActual
+}
+
+const esEtapaActual = (estadoEtapa: string): boolean => {
+  return pedidoActual.value?.estado === estadoEtapa
+}
+
+const cerrarSeguimiento = () => {
+  mostrandoSeguimiento.value = false
+  pedidoActual.value = null
 }
 
 // Intersection Observer para navegación
