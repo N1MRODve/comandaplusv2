@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-8">
-    <h1 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
     <!-- KPIs principales -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <!-- Ventas hoy -->

@@ -217,56 +217,6 @@ export const useDemoStore = defineStore('demo', () => {
     return nuevoPedido
   }
   
-  // Nueva función para crear pedido con simulación de estados
-  const crearPedidoConSimulacion = (datosPedido: any) => {
-    const nuevoPedido = crearPedidoDemo(datosPedido)
-    
-    // --- SIMULACIÓN DE PROCESO DE COCINA ---
-    const pedidoId = nuevoPedido.id
-    
-    // Cambiar a "confirmado" después de 3 segundos
-    setTimeout(() => {
-      const pedido = pedidos.value.find(p => p.id === pedidoId)
-      if (pedido) {
-        pedido.estado = 'confirmado'
-        pedido.actualizado_el = new Date().toISOString()
-        lastUpdate.value = new Date()
-      }
-    }, 3000)
-    
-    // Cambiar a "en_preparacion" después de 10 segundos
-    setTimeout(() => {
-      const pedido = pedidos.value.find(p => p.id === pedidoId)
-      if (pedido) {
-        pedido.estado = 'en_preparacion'
-        pedido.actualizado_el = new Date().toISOString()
-        lastUpdate.value = new Date()
-      }
-    }, 10000)
-    
-    // Cambiar a "listo" después de 25 segundos
-    setTimeout(() => {
-      const pedido = pedidos.value.find(p => p.id === pedidoId)
-      if (pedido) {
-        pedido.estado = 'listo'
-        pedido.actualizado_el = new Date().toISOString()
-        lastUpdate.value = new Date()
-      }
-    }, 25000)
-    
-    // Cambiar a "entregado" después de 35 segundos
-    setTimeout(() => {
-      const pedido = pedidos.value.find(p => p.id === pedidoId)
-      if (pedido) {
-        pedido.estado = 'entregado'
-        pedido.actualizado_el = new Date().toISOString()
-        lastUpdate.value = new Date()
-      }
-    }, 35000)
-    
-    return nuevoPedido
-  }
-  
   // Acciones para mesas
   const actualizarEstadoMesa = (mesaId: string, nuevoEstado: string) => {
     const mesaIndex = mesas.value.findIndex(m => m.id === mesaId)
@@ -544,7 +494,6 @@ export const useDemoStore = defineStore('demo', () => {
     actualizarEstadoPedido,
     actualizarEstadoItem,
     crearPedidoDemo,
-    crearPedidoConSimulacion,
     
     // Acciones - Mesas
     actualizarEstadoMesa,

@@ -355,79 +355,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Estado del pedido -->
-    <div v-if="pedidoRealizado && pedidoActual" class="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md border border-gray-200">
-      <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Gracias por tu pedido!</h2>
-      <p class="text-gray-600 mb-6">Estamos preparando tu comida. Puedes ver el estado a continuación:</p>
-      <div class="flex items-center justify-center p-4 bg-blue-50 rounded-lg">
-        <span class="text-lg font-semibold text-blue-800">Estado:</span>
-        <span class="ml-3 px-4 py-1 text-lg font-bold text-white rounded-full"
-              :class="{
-                'bg-gray-500': pedidoActual.estado === 'pendiente',
-                'bg-orange-500': pedidoActual.estado === 'en_preparacion',
-                'bg-green-500': pedidoActual.estado === 'listo',
-                'bg-blue-500': pedidoActual.estado === 'entregado'
-              }">
-          {{ getEstadoTexto(pedidoActual.estado) }}
-        </span>
-      </div>
-      
-      <!-- Botones de acción -->
-      <div class="flex space-x-3 mt-6">
-        <button
-          @click="cerrarSeguimiento"
-          class="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors"
-        >
-          Cerrar seguimiento
-        </button>
-        <button
-          v-if="pedidoActual.estado === 'entregado'"
-          @click="pedidoCompletado = true; pedidoRealizado = false"
-          class="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors"
-        >
-          ¡Perfecto!
-        </button>
-      </div>
-      
-      <p class="text-center text-sm text-gray-500 mt-4">Esta ventana se actualizará automáticamente.</p>
-    </div>
-
-    <!-- Botón flotante para reabrir seguimiento -->
-    <div 
-      v-if="!pedidoRealizado && pedidoId && pedidoActual && pedidoActual.estado !== 'entregado'"
-      class="fixed bottom-24 right-4 z-40"
-    >
-      <button
-        @click="abrirSeguimiento"
-        class="bg-blue-500 text-white p-4 rounded-full shadow-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-110"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-        <div class="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
-      </button>
-    </div>
-
-    <!-- Mensaje de pedido completado -->
-    <div v-if="pedidoCompletado" class="max-w-md mx-auto mt-8 p-6 bg-green-50 rounded-lg shadow-md border border-green-200">
-      <div class="text-center">
-        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-        <h3 class="text-xl font-bold text-green-800 mb-2">¡Pedido completado!</h3>
-        <p class="text-green-700 mb-4">Esperamos que hayas disfrutado tu comida</p>
-        <button
-          @click="pedidoCompletado = false; pedidoId = null"
-          class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-        >
-          Hacer nuevo pedido
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -443,55 +370,11 @@ const activeCategoryId = ref('')
 const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
 
-// Estado del seguimiento de pedidos
-const pedidoRealizado = ref(false)
-const pedidoId = ref<number | null>(null)
-
-// Creamos una propiedad computada que encontrará el pedido actual del cliente
-// y se actualizará automáticamente cuando el store cambie.
-const pedidoActual = computed(() => {
-  if (!pedidoId.value) return null
-  return demoStore.pedidos.find((p) => p.id === pedidoId.value)
-})
-
-// Estado del seguimiento de pedidos
-const mostrandoSeguimiento = ref(false)
-const pedidoCompletado = ref(false)
-
 // Computed
 const menuData = computed(() => demoStore.getMenuData())
 const totalCarrito = computed(() => 
   carritoItems.value.reduce((total, item) => total + (item.precio * item.cantidad), 0)
 )
-
-// Estados del pedido para el timeline
-const etapasPedido = computed(() => [
-  {
-    estado: 'pendiente',
-    nombre: 'Pedido recibido',
-    descripcion: 'Tu pedido ha sido confirmado'
-  },
-  {
-    estado: 'confirmado',
-    nombre: 'Confirmado',
-    descripcion: 'El restaurante ha confirmado tu pedido'
-  },
-  {
-    estado: 'en_preparacion',
-    nombre: 'En preparación',
-    descripcion: 'Los chefs están preparando tu comida'
-  },
-  {
-    estado: 'listo',
-    nombre: 'Listo para servir',
-    descripcion: 'Tu pedido está listo, el camarero lo llevará pronto'
-  },
-  {
-    estado: 'entregado',
-    nombre: 'Entregado',
-    descripcion: '¡Disfruta tu comida!'
-  }
-])
 
 // Métodos
 const scrollToCategory = (categoriaId: string) => {
@@ -553,12 +436,9 @@ const eliminarDelCarrito = (index: number) => {
   carritoItems.value.splice(index, 1)
 }
 
-// Función realizarPedido modificada para activar el seguimiento
 const realizarPedidoDemo = () => {
-  if (carritoItems.value.length === 0) return
-  
-  // La función crearPedidoConSimulacion ahora devuelve el pedido que acaba de crear
-  const nuevoPedido = demoStore.crearPedidoConSimulacion({
+  // Simular creación de pedido
+  const nuevoPedido = demoStore.crearPedidoDemo({
     numero_mesa: '5',
     cliente_nombre: 'Cliente Demo',
     items: carritoItems.value,
@@ -567,36 +447,11 @@ const realizarPedidoDemo = () => {
     comensales: 2
   })
   
-  pedidoId.value = nuevoPedido.id // Guardamos el ID
-  pedidoRealizado.value = true // Activamos la UI de seguimiento
+  mostrarNotificacion(`¡Pedido ${nuevoPedido.numero_pedido} realizado con éxito! 🎉`, 'success')
   
+  // Limpiar carrito
   carritoItems.value = []
   mostrarCarrito.value = false
-  mostrarNotificacion(`¡Pedido ${nuevoPedido.numero_pedido} realizado con éxito! 🎉`, 'success')
-}
-
-// Funciones para el seguimiento
-const cerrarSeguimiento = () => {
-  mostrandoSeguimiento.value = false
-  pedidoRealizado.value = false
-}
-
-const abrirSeguimiento = () => {
-  if (pedidoActual.value) {
-    mostrandoSeguimiento.value = true
-    pedidoRealizado.value = true
-  }
-}
-
-const getEstadoTexto = (estado: string) => {
-  const estados = {
-    'pendiente': 'Pedido recibido',
-    'confirmado': 'Confirmado',
-    'en_preparacion': 'En preparación',
-    'listo': 'Listo para servir',
-    'entregado': 'Entregado'
-  }
-  return estados[estado as keyof typeof estados] || estado
 }
 
 const mostrarNotificacion = (mensaje: string, tipo: 'success' | 'warning' | 'error') => {
