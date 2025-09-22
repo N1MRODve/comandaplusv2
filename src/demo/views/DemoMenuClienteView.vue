@@ -400,7 +400,6 @@ const pedidoActual = computed(() => {
 })
 
 // Estado del seguimiento de pedidos
-const pedidoActual = ref<any>(null)
 const mostrandoSeguimiento = ref(false)
 const pedidoCompletado = ref(false)
 
