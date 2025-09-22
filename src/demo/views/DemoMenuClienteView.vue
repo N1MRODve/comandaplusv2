@@ -216,52 +216,6 @@
       </div>
     </div>
 
-    <!-- Seguimiento del pedido después de realizarlo -->
-    <div v-if="pedidoRealizado && pedidoActual" class="max-w-md mx-auto px-4 mt-8 pb-8">
-      <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Gracias por tu pedido!</h2>
-        <p class="text-gray-600 mb-6">Estamos preparando tu comida. Puedes ver el estado a continuación:</p>
-        <div class="flex items-center justify-center p-4 bg-blue-50 rounded-lg">
-          <span class="text-lg font-semibold text-blue-800">Estado:</span>
-          <span class="ml-3 px-4 py-1 text-lg font-bold text-white rounded-full"
-                :class="{
-                  'bg-gray-500': pedidoActual.estado === 'pendiente',
-                  'bg-yellow-500': pedidoActual.estado === 'confirmado',
-                  'bg-orange-500': pedidoActual.estado === 'en_preparacion',
-                  'bg-green-500': pedidoActual.estado === 'listo',
-                  'bg-blue-500': pedidoActual.estado === 'entregado'
-                }">
-            {{ getEstadoTexto(pedidoActual.estado) }}
-          </span>
-        </div>
-        <p class="text-center text-sm text-gray-500 mt-4">Esta ventana se actualizará automáticamente.</p>
-        
-        <!-- Información adicional del pedido -->
-        <div class="mt-6 pt-4 border-t border-gray-200">
-          <div class="flex justify-between text-sm mb-2">
-            <span class="text-gray-600">Pedido:</span>
-            <span class="font-medium">{{ pedidoActual.numero_pedido }}</span>
-          </div>
-          <div class="flex justify-between text-sm mb-2">
-            <span class="text-gray-600">Mesa:</span>
-            <span class="font-medium">{{ pedidoActual.numero_mesa }}</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-gray-600">Total:</span>
-            <span class="font-bold">€{{ pedidoActual.total.toFixed(2) }}</span>
-          </div>
-        </div>
-        
-        <!-- Botón para cerrar el seguimiento -->
-        <button
-          @click="cerrarSeguimiento"
-          class="w-full mt-6 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
-        >
-          Cerrar seguimiento
-        </button>
-      </div>
-    </div>
-
     <!-- Botón flotante del carrito -->
     <div 
       v-if="carritoItems.length > 0"
@@ -290,96 +244,6 @@
           </div>
         </div>
       </button>
-    </div>
-
-    <!-- Seguimiento del pedido en tiempo real -->
-    <div 
-      v-if="mostrandoSeguimiento && pedidoActual"
-      class="fixed bottom-6 left-4 right-4 z-50 max-w-md mx-auto"
-    >
-      <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
-        <!-- Header del seguimiento -->
-        <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 text-white">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 class="font-bold text-lg">Seguimiento del Pedido</h3>
-              <p class="text-blue-100 text-sm">{{ pedidoActual.numero_pedido }}</p>
-            </div>
-            <button 
-              @click="cerrarSeguimiento"
-              class="text-blue-100 hover:text-white transition-colors"
-            >
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Estado actual del pedido -->
-        <div class="p-6">
-          <div class="flex items-center space-x-4 mb-4">
-            <div :class="[
-              'w-12 h-12 rounded-full flex items-center justify-center',
-              getEstadoColor(pedidoActual.estado)
-            ]">
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="getEstadoIcon(pedidoActual.estado)" />
-              </svg>
-            </div>
-            <div>
-              <h4 class="font-bold text-gray-900 text-lg">{{ getEstadoTexto(pedidoActual.estado) }}</h4>
-              <p class="text-gray-600 text-sm">{{ getEstadoDescripcion(pedidoActual.estado) }}</p>
-            </div>
-          </div>
-
-          <!-- Timeline del pedido -->
-          <div class="space-y-3">
-            <div 
-              v-for="(etapa, index) in etapasPedido" 
-              :key="index"
-              class="flex items-center space-x-3"
-            >
-              <div :class="[
-                'w-3 h-3 rounded-full flex-shrink-0',
-                esEtapaCompletada(etapa.estado) ? 'bg-green-500' : 
-                esEtapaActual(etapa.estado) ? 'bg-blue-500 animate-pulse' : 'bg-gray-300'
-              ]"></div>
-              <div class="flex-1">
-                <p :class="[
-                  'text-sm font-medium',
-                  esEtapaCompletada(etapa.estado) ? 'text-green-700' :
-                  esEtapaActual(etapa.estado) ? 'text-blue-700' : 'text-gray-500'
-                ]">
-                  {{ etapa.nombre }}
-                </p>
-                <p class="text-xs text-gray-500">{{ etapa.descripcion }}</p>
-              </div>
-              <div v-if="esEtapaCompletada(etapa.estado)" class="flex-shrink-0">
-                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <!-- Información adicional -->
-          <div class="mt-6 pt-4 border-t border-gray-200">
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Mesa:</span>
-              <span class="font-medium">{{ pedidoActual.numero_mesa }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Total:</span>
-              <span class="font-bold">€{{ pedidoActual.total.toFixed(2) }}</span>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-gray-600">Tiempo estimado:</span>
-              <span class="font-medium">{{ getTiempoEstimado(pedidoActual.estado) }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Modal del carrito -->
@@ -506,19 +370,6 @@ const activeCategoryId = ref('')
 const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
 
-// Variables de estado para rastrear el pedido del cliente
-const pedidoRealizado = ref(false)
-const pedidoId = ref<number | null>(null)
-
-// Propiedad computada que encontrará el pedido actual del cliente
-// y se actualizará automáticamente cuando el store cambie
-const pedidoActual = computed(() => {
-  if (!pedidoId.value) return null
-  return demoStore.pedidos.find((p) => p.id === pedidoId.value)
-})
-
-const mostrandoSeguimiento = ref(false)
-
 // Computed
 const menuData = computed(() => demoStore.getMenuData())
 const totalCarrito = computed(() => 
@@ -615,11 +466,10 @@ const eliminarDelCarrito = (index: number) => {
 }
 
 // Función realizarPedido modificada para activar el seguimiento
-function realizarPedidoDemo() {
+const realizarPedidoDemo = () => {
   if (carritoItems.value.length === 0) return
   
-  // La función crearPedidoConSimulacion ahora devuelve el pedido que acaba de crear
-  const nuevoPedido = demoStore.crearPedidoConSimulacion({
+  const nuevoPedido = demoStore.crearPedidoDemo({
     numero_mesa: '5',
     cliente_nombre: 'Cliente Demo',
     items: carritoItems.value,
@@ -627,13 +477,9 @@ function realizarPedidoDemo() {
     total: totalCarrito.value,
     comensales: 2
   })
-
-  pedidoId.value = nuevoPedido.id // Guardamos el ID
-  pedidoRealizado.value = true // Activamos la UI de seguimiento
-
-  carritoItems.value = [] // Limpiamos el carrito
-  mostrarCarrito.value = false // Cerramos el modal del carrito
   
+  carritoItems.value = []
+  mostrarCarrito.value = false
   mostrarNotificacion(`¡Pedido ${nuevoPedido.numero_pedido} realizado con éxito! 🎉`, 'success')
 }
 
@@ -657,86 +503,6 @@ const mostrarNotificacion = (mensaje: string, tipo: 'success' | 'warning' | 'err
       }
     }, 300)
   }, 3000)
-}
-
-// Métodos para el seguimiento del pedido
-const getEstadoTexto = (estado: string): string => {
-  const textos: Record<string, string> = {
-    'pendiente': 'Pedido Recibido',
-    'confirmado': 'Confirmado',
-    'en_preparacion': 'En Preparación',
-    'listo': 'Listo para Servir',
-    'entregado': 'Entregado'
-  }
-  return textos[estado] || estado
-}
-
-const getEstadoDescripcion = (estado: string): string => {
-  const descripciones: Record<string, string> = {
-    'pendiente': 'Tu pedido ha sido recibido correctamente',
-    'confirmado': 'El restaurante ha confirmado tu pedido',
-    'en_preparacion': 'Los chefs están preparando tu comida',
-    'listo': 'Tu pedido está listo para servir',
-    'entregado': '¡Disfruta tu comida!'
-  }
-  return descripciones[estado] || ''
-}
-
-const getEstadoColor = (estado: string): string => {
-  const colores: Record<string, string> = {
-    'pendiente': 'bg-orange-500',
-    'confirmado': 'bg-yellow-500',
-    'en_preparacion': 'bg-blue-500',
-    'listo': 'bg-green-500',
-    'entregado': 'bg-gray-500'
-  }
-  return colores[estado] || 'bg-gray-500'
-}
-
-const getEstadoIcon = (estado: string): string => {
-  const iconos: Record<string, string> = {
-    'pendiente': 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
-    'confirmado': 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
-    'en_preparacion': 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
-    'listo': 'M5 13l4 4L19 7',
-    'entregado': 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
-  }
-  return iconos[estado] || 'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'
-}
-
-const getTiempoEstimado = (estado: string): string => {
-  const tiempos: Record<string, string> = {
-    'pendiente': '2-3 minutos',
-    'confirmado': '8-12 minutos',
-    'en_preparacion': '15-20 minutos',
-    'listo': '2-5 minutos',
-    'entregado': 'Completado'
-  }
-  return tiempos[estado] || 'Calculando...'
-}
-
-const esEtapaCompletada = (estadoEtapa: string): boolean => {
-  if (!pedidoActual.value) return false
-  
-  const ordenEstados = ['pendiente', 'confirmado', 'en_preparacion', 'listo', 'entregado']
-  const indiceActual = ordenEstados.indexOf(pedidoActual.value.estado)
-  const indiceEtapa = ordenEstados.indexOf(estadoEtapa)
-  
-  return indiceEtapa < indiceActual
-}
-
-const esEtapaActual = (estadoEtapa: string): boolean => {
-  return pedidoActual.value?.estado === estadoEtapa
-}
-
-const cerrarSeguimiento = () => {
-  mostrandoSeguimiento.value = false
-}
-
-// Nueva función para cerrar el seguimiento del pedido realizado
-const cerrarSeguimiento = () => {
-  pedidoRealizado.value = false
-  pedidoId.value = null
 }
 
 // Intersection Observer para navegación
