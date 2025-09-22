@@ -237,6 +237,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useDemoStore } from '@/demo/stores/useDemoStore'
 
+const demoStore = useDemoStore()
+const lastUpdate = computed(() => demoStore.lastUpdate)
+
 const notificacionesAbiertas = ref(false)
 const showMobileMenu = ref(false)
 

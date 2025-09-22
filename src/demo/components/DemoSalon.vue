@@ -473,6 +473,10 @@ const getMesaIndicatorClasses = (mesa: any) => {
     return 'bg-red-500'
   }
   
+  if (mesa.estado === 'pagada') {
+    return 'bg-green-500 animate-pulse'
+  }
+  
   switch (mesa.estado) {
     case 'libre': return 'bg-green-500'
     case 'ocupada': return 'bg-red-500'

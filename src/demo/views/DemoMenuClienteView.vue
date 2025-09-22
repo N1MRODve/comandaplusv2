@@ -722,6 +722,20 @@ const solicitarAyuda = (tipo: 'Cuenta' | 'Atención') => {
   }, 5000)
 }
 
+// Función para iniciar el proceso de pago
+const iniciarProcesoDePago = () => {
+  if (!pedidoActual.value) return
+
+  mostrandoModalPago.value = true
+  estadoPago.value = 'procesando'
+
+  // Simular llamada a pasarela de pago (dura 3 segundos)
+  setTimeout(() => {
+    demoStore.procesarPago(pedidoActual.value!.id)
+    estadoPago.value = 'completado'
+  }, 3000)
+}
+
 // Intersection Observer para navegación
 let observer: IntersectionObserver | null = null
 

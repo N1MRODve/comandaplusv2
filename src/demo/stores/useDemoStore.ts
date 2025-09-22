@@ -592,6 +592,9 @@ export const useDemoStore = defineStore('demo', () => {
     
     // Solicitudes de mesa
     crearSolicitud,
-    resolverSolicitud
+    resolverSolicitud,
+    
+    // Pagos
+    procesarPago
   }
 })
