@@ -17,10 +17,8 @@
               :key="item.name"
               :to="item.to"
               :class="[
-                'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
-                isActiveRoute(item.to) 
-                  ? 'bg-white/20 text-white' 
-                  : 'text-gray-300 hover:text-white hover:bg-white/10'
+                'text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium',
+                { 'bg-gray-900 text-white': $route.name === item.to.name }
               ]"
             >
               <component :is="item.icon" class="w-3 h-3 mr-1 inline" />
