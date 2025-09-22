@@ -216,6 +216,52 @@
       </div>
     </div>
 
+    <!-- Seguimiento del pedido después de realizarlo -->
+    <div v-if="pedidoRealizado && pedidoActual" class="max-w-md mx-auto px-4 mt-8 pb-8">
+      <div class="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Gracias por tu pedido!</h2>
+        <p class="text-gray-600 mb-6">Estamos preparando tu comida. Puedes ver el estado a continuación:</p>
+        <div class="flex items-center justify-center p-4 bg-blue-50 rounded-lg">
+          <span class="text-lg font-semibold text-blue-800">Estado:</span>
+          <span class="ml-3 px-4 py-1 text-lg font-bold text-white rounded-full"
+                :class="{
+                  'bg-gray-500': pedidoActual.estado === 'pendiente',
+                  'bg-yellow-500': pedidoActual.estado === 'confirmado',
+                  'bg-orange-500': pedidoActual.estado === 'en_preparacion',
+                  'bg-green-500': pedidoActual.estado === 'listo',
+                  'bg-blue-500': pedidoActual.estado === 'entregado'
+                }">
+            {{ getEstadoTexto(pedidoActual.estado) }}
+          </span>
+        </div>
+        <p class="text-center text-sm text-gray-500 mt-4">Esta ventana se actualizará automáticamente.</p>
+        
+        <!-- Información adicional del pedido -->
+        <div class="mt-6 pt-4 border-t border-gray-200">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-gray-600">Pedido:</span>
+            <span class="font-medium">{{ pedidoActual.numero_pedido }}</span>
+          </div>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-gray-600">Mesa:</span>
+            <span class="font-medium">{{ pedidoActual.numero_mesa }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-600">Total:</span>
+            <span class="font-bold">€{{ pedidoActual.total.toFixed(2) }}</span>
+          </div>
+        </div>
+        
+        <!-- Botón para cerrar el seguimiento -->
+        <button
+          @click="cerrarSeguimiento"
+          class="w-full mt-6 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+        >
+          Cerrar seguimiento
+        </button>
+      </div>
+    </div>
+
     <!-- Botón flotante del carrito -->
     <div 
       v-if="carritoItems.length > 0"
@@ -459,7 +505,18 @@ const mostrarCarrito = ref(false)
 const activeCategoryId = ref('')
 const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
-const pedidoActual = ref<any>(null)
+
+// Variables de estado para rastrear el pedido del cliente
+const pedidoRealizado = ref(false)
+const pedidoId = ref<number | null>(null)
+
+// Propiedad computada que encontrará el pedido actual del cliente
+// y se actualizará automáticamente cuando el store cambie
+const pedidoActual = computed(() => {
+  if (!pedidoId.value) return null
+  return demoStore.pedidos.find((p) => p.id === pedidoId.value)
+})
+
 const mostrandoSeguimiento = ref(false)
 
 // Computed
@@ -557,8 +614,11 @@ const eliminarDelCarrito = (index: number) => {
   carritoItems.value.splice(index, 1)
 }
 
-const realizarPedidoDemo = () => {
-  // Simular creación de pedido
+// Función realizarPedido modificada para activar el seguimiento
+function realizarPedidoDemo() {
+  if (carritoItems.value.length === 0) return
+  
+  // La función crearPedidoConSimulacion ahora devuelve el pedido que acaba de crear
   const nuevoPedido = demoStore.crearPedidoConSimulacion({
     numero_mesa: '5',
     cliente_nombre: 'Cliente Demo',
@@ -567,16 +627,14 @@ const realizarPedidoDemo = () => {
     total: totalCarrito.value,
     comensales: 2
   })
+
+  pedidoId.value = nuevoPedido.id // Guardamos el ID
+  pedidoRealizado.value = true // Activamos la UI de seguimiento
+
+  carritoItems.value = [] // Limpiamos el carrito
+  mostrarCarrito.value = false // Cerramos el modal del carrito
   
   mostrarNotificacion(`¡Pedido ${nuevoPedido.numero_pedido} realizado con éxito! 🎉`, 'success')
-  
-  // Limpiar carrito
-  carritoItems.value = []
-  mostrarCarrito.value = false
-  
-  // Mostrar seguimiento del pedido
-  pedidoActual.value = nuevoPedido
-  mostrandoSeguimiento.value = true
 }
 
 const mostrarNotificacion = (mensaje: string, tipo: 'success' | 'warning' | 'error') => {
@@ -673,7 +731,12 @@ const esEtapaActual = (estadoEtapa: string): boolean => {
 
 const cerrarSeguimiento = () => {
   mostrandoSeguimiento.value = false
-  pedidoActual.value = null
+}
+
+// Nueva función para cerrar el seguimiento del pedido realizado
+const cerrarSeguimiento = () => {
+  pedidoRealizado.value = false
+  pedidoId.value = null
 }
 
 // Intersection Observer para navegación
