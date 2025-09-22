@@ -481,6 +481,41 @@
       </div>
     </div>
   </div>
+  
+  <!-- Modal de pago -->
+  <div v-if="mostrandoModalPago" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-2xl p-8 max-w-sm w-full text-center">
+      <div v-if="estadoPago === 'procesando'">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Procesando Pago Seguro</h3>
+        <svg class="animate-spin h-12 w-12 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-gray-600 mt-4">Por favor, espera un momento...</p>
+        <div class="mt-4 bg-gray-50 rounded-lg p-3">
+          <p class="text-sm text-gray-600">Total a pagar:</p>
+          <p class="text-lg font-bold text-gray-900">€{{ pedidoActual?.total.toFixed(2) }}</p>
+        </div>
+      </div>
+      <div v-if="estadoPago === 'completado'">
+        <h3 class="text-2xl font-bold text-green-600 mb-4">¡Pago Completado!</h3>
+        <svg class="h-16 w-16 text-green-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p class="text-gray-700 mt-4">Gracias por tu visita a ComandaPlus Demo. ¡Esperamos verte de nuevo!</p>
+        <div class="mt-4 bg-green-50 rounded-lg p-3">
+          <p class="text-sm text-green-600">Pago procesado:</p>
+          <p class="text-lg font-bold text-green-800">€{{ pedidoActual?.total.toFixed(2) }}</p>
+        </div>
+        <button 
+          @click="mostrandoModalPago = false" 
+          class="mt-6 bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -720,20 +755,6 @@ const solicitarAyuda = (tipo: 'Cuenta' | 'Atención') => {
   setTimeout(() => {
     solicitudEnviada.value = false
   }, 5000)
-}
-
-// Función para iniciar el proceso de pago
-const iniciarProcesoDePago = () => {
-  if (!pedidoActual.value) return
-
-  mostrandoModalPago.value = true
-  estadoPago.value = 'procesando'
-
-  // Simular llamada a pasarela de pago (dura 3 segundos)
-  setTimeout(() => {
-    demoStore.procesarPago(pedidoActual.value!.id)
-    estadoPago.value = 'completado'
-  }, 3000)
 }
 
 // Intersection Observer para navegación
