@@ -410,63 +410,6 @@ const etapasPedido = computed(() => [
   }
 ])
 
-const cerrarSeguimiento = () => {
-  mostrandoSeguimiento.value = false
-}
-
-const abrirSeguimiento = () => {
-  if (pedidoActual.value) {
-    mostrandoSeguimiento.value = true
-  }
-}
-
-const getEstadoInfo = (estado: string) => {
-  const estados = {
-    'pendiente': { 
-      texto: 'Pedido recibido', 
-      descripcion: 'Hemos recibido tu pedido correctamente',
-      color: 'bg-blue-500',
-      icono: '📝'
-    },
-    'confirmado': { 
-      texto: 'Confirmado', 
-      descripcion: 'El restaurante ha confirmado tu pedido',
-      color: 'bg-yellow-500',
-      icono: '✅'
-    },
-    'en_preparacion': { 
-      texto: 'En preparación', 
-      descripcion: 'Los chefs están preparando tu comida',
-      color: 'bg-orange-500',
-      icono: '👨‍🍳'
-    },
-    'listo': { 
-      texto: 'Listo para servir', 
-      descripcion: 'Tu pedido está listo, el camarero lo llevará pronto',
-      color: 'bg-green-500',
-      icono: '🍽️'
-    },
-    'entregado': { 
-      texto: 'Entregado', 
-      descripcion: '¡Disfruta tu comida!',
-      color: 'bg-gray-500',
-      icono: '🎉'
-    }
-  }
-  return estados[estado as keyof typeof estados] || estados.pendiente
-}
-
-const getTiempoEstimado = (estado: string) => {
-  const tiempos = {
-    'pendiente': '2-3 min',
-    'confirmado': '8-10 min',
-    'en_preparacion': '15-20 min',
-    'listo': '2-5 min',
-    'entregado': 'Completado'
-  }
-  return tiempos[estado as keyof typeof tiempos] || 'Calculando...'
-}
-
 // Métodos
 const scrollToCategory = (categoriaId: string) => {
   const element = document.getElementById(`categoria-${categoriaId}`)
@@ -560,6 +503,75 @@ const realizarPedidoDemo = () => {
   carritoItems.value = []
   mostrarCarrito.value = false
   mostrarNotificacion(`¡Pedido ${nuevoPedido.numero_pedido} realizado con éxito! 🎉`, 'success')
+}
+
+// Funciones para el seguimiento
+const cerrarSeguimiento = () => {
+  mostrandoSeguimiento.value = false
+}
+
+const abrirSeguimiento = () => {
+  if (pedidoActual.value) {
+    mostrandoSeguimiento.value = true
+  }
+}
+
+const getEstadoInfo = (estado: string) => {
+  const estados = {
+    'pendiente': { 
+      texto: 'Pedido recibido', 
+      descripcion: 'Hemos recibido tu pedido correctamente',
+      color: 'bg-blue-500',
+      icono: '📝'
+    },
+    'confirmado': { 
+      texto: 'Confirmado', 
+      descripcion: 'El restaurante ha confirmado tu pedido',
+      color: 'bg-yellow-500',
+      icono: '✅'
+    },
+    'en_preparacion': { 
+      texto: 'En preparación', 
+      descripcion: 'Los chefs están preparando tu comida',
+      color: 'bg-orange-500',
+      icono: '👨‍🍳'
+    },
+    'listo': { 
+      texto: 'Listo para servir', 
+      descripcion: 'Tu pedido está listo, el camarero lo llevará pronto',
+      color: 'bg-green-500',
+      icono: '🍽️'
+    },
+    'entregado': { 
+      texto: 'Entregado', 
+      descripcion: '¡Disfruta tu comida!',
+      color: 'bg-gray-500',
+      icono: '🎉'
+    }
+  }
+  return estados[estado as keyof typeof estados] || estados.pendiente
+}
+
+const getTiempoEstimado = (estado: string) => {
+  const tiempos = {
+    'pendiente': '2-3 min',
+    'confirmado': '8-10 min', 
+    'en_preparacion': '15-20 min',
+    'listo': '2-5 min',
+    'entregado': 'Completado'
+  }
+  return tiempos[estado as keyof typeof tiempos] || 'Calculando...'
+}
+
+const getEstadoCompletado = (estadoEtapa: string, estadoActual: string) => {
+  const orden = ['pendiente', 'confirmado', 'en_preparacion', 'listo', 'entregado']
+  const indiceEtapa = orden.indexOf(estadoEtapa)
+  const indiceActual = orden.indexOf(estadoActual)
+  return indiceEtapa < indiceActual
+}
+
+const getEstadoActual = (estadoEtapa: string, estadoActual: string) => {
+  return estadoEtapa === estadoActual
 }
 
 const mostrarNotificacion = (mensaje: string, tipo: 'success' | 'warning' | 'error') => {
