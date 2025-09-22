@@ -445,6 +445,41 @@
         </div>
       </div>
     </div>
+    
+    <!-- Barra de asistencia fija en la parte inferior -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg p-3 flex justify-around items-center z-40">
+      <button 
+        @click="solicitarAyuda('Cuenta')" 
+        class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition-colors flex items-center space-x-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        <span>Pedir la cuenta</span>
+      </button>
+      <button 
+        @click="solicitarAyuda('Atención')" 
+        class="bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow hover:bg-gray-800 transition-colors flex items-center space-x-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+        </svg>
+        <span>Llamar al camarero</span>
+      </button>
+    </div>
+
+    <!-- Mensaje de confirmación -->
+    <div 
+      v-if="solicitudEnviada" 
+      class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white py-4 px-8 rounded-lg shadow-xl z-50 max-w-sm mx-auto text-center"
+    >
+      <div class="flex items-center space-x-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <p class="font-semibold">¡Aviso enviado! Un camarero vendrá en breve.</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -461,6 +496,7 @@ const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
 const pedidoActual = ref<any>(null)
 const mostrandoSeguimiento = ref(false)
+const solicitudEnviada = ref(false)
 
 // Computed
 const menuData = computed(() => demoStore.getMenuData())
@@ -674,6 +710,16 @@ const esEtapaActual = (estadoEtapa: string): boolean => {
 const cerrarSeguimiento = () => {
   mostrandoSeguimiento.value = false
   pedidoActual.value = null
+}
+
+// Función para solicitar ayuda
+const solicitarAyuda = (tipo: 'Cuenta' | 'Atención') => {
+  demoStore.crearSolicitud(tipo)
+  solicitudEnviada.value = true
+  // Ocultar el mensaje de confirmación después de 5 segundos
+  setTimeout(() => {
+    solicitudEnviada.value = false
+  }, 5000)
 }
 
 // Intersection Observer para navegación

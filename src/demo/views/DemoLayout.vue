@@ -25,6 +25,102 @@
               {{ item.name }}
             </router-link>
             
+            <!-- Menú de notificaciones de mesa -->
+            <div class="relative ml-4">
+              <div>
+                <button 
+                  @click="notificacionesAbiertas = !notificacionesAbiertas" 
+                  type="button" 
+                  class="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 transition-colors"
+                >
+                  <span class="sr-only">Ver notificaciones</span>
+                  <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                  </svg>
+                  <span 
+                    v-if="demoStore.solicitudesMesa.length > 0" 
+                    class="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center font-bold animate-pulse"
+                  >
+                    {{ demoStore.solicitudesMesa.length }}
+                  </span>
+                </button>
+              </div>
+
+              <!-- Dropdown de notificaciones -->
+              <div 
+                v-if="notificacionesAbiertas" 
+                class="absolute right-0 z-10 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-200"
+                role="menu" 
+                aria-orientation="vertical"
+                @click.stop
+              >
+                <div class="px-4 py-2 text-sm text-gray-700 font-bold border-b border-gray-100 bg-gray-50">
+                  <div class="flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5" />
+                    </svg>
+                    <span>Avisos de Mesas</span>
+                  </div>
+                </div>
+                
+                <div v-if="demoStore.solicitudesMesa.length === 0" class="px-4 py-6 text-center">
+                  <svg class="mx-auto h-8 w-8 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p class="text-sm text-gray-500">No hay avisos nuevos</p>
+                  <p class="text-xs text-gray-400 mt-1">Las solicitudes de mesa aparecerán aquí</p>
+                </div>
+                
+                <div v-else class="max-h-64 overflow-y-auto">
+                  <div 
+                    v-for="solicitud in demoStore.solicitudesMesa" 
+                    :key="solicitud.id" 
+                    class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                    role="menuitem"
+                  >
+                    <div class="flex justify-between items-start">
+                      <div class="flex-1">
+                        <div class="flex items-center space-x-2 mb-1">
+                          <span class="font-bold text-gray-900">Mesa {{ solicitud.mesa }}</span>
+                          <span :class="[
+                            'px-2 py-0.5 text-xs font-medium rounded-full',
+                            solicitud.tipo === 'Cuenta' ? 'bg-blue-100 text-blue-800' : 'bg-orange-100 text-orange-800'
+                          ]">
+                            {{ solicitud.tipo }}
+                          </span>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                          Solicita: {{ solicitud.tipo === 'Cuenta' ? 'La cuenta' : 'Atención del camarero' }}
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1">
+                          {{ formatearTiempoSolicitud(solicitud.timestamp) }}
+                        </p>
+                      </div>
+                      <button 
+                        @click.stop="resolverSolicitudYCerrar(solicitud.id)" 
+                        class="ml-3 bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full hover:bg-green-200 transition-colors flex items-center space-x-1"
+                      >
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Resolver</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Footer del dropdown -->
+                <div class="px-4 py-2 border-t border-gray-100 bg-gray-50">
+                  <button 
+                    @click="notificacionesAbiertas = false"
+                    class="w-full text-center text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Cerrar notificaciones
+                  </button>
+                </div>
+              </div>
+            </div>
+            
             <!-- Demo type indicator -->
             <div class="ml-4 px-3 py-1.5 bg-white/10 rounded-md">
               <span class="text-xs font-medium text-gray-300">
@@ -141,6 +237,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDemoStore } from '@/demo/stores/useDemoStore'
+
+const demoStore = useDemoStore()
+const notificacionesAbiertas = ref(false)
 
 // Iconos simplificados
 const HomeIcon = { template: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>`}

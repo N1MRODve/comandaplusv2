@@ -21,6 +21,9 @@ export const useDemoStore = defineStore('demo', () => {
   const lastUpdate = ref<Date>(new Date())
   const simulateRealTime = ref(true)
   
+  // Estado para solicitudes de mesa
+  const solicitudesMesa = ref<Array<{ id: number; mesa: number; tipo: 'Cuenta' | 'Atención'; timestamp: Date }>>([])
+  
   // Computed properties para pedidos
   const pedidosActivos = computed(() => 
     pedidos.value.filter(p => !['entregado', 'pagado', 'cancelado'].includes(p.estado))
@@ -510,6 +513,24 @@ export const useDemoStore = defineStore('demo', () => {
     exportarDatosMock(formato, tipoReporte)
   }
   
+  // Acciones para solicitudes de mesa
+  const crearSolicitud = (tipo: 'Cuenta' | 'Atención') => {
+    const nuevaSolicitud = {
+      id: Date.now(), // Usamos timestamp como ID único para la demo
+      mesa: 5, // Mesa de demo (coincide con la mesa mostrada en el cliente)
+      tipo,
+      timestamp: new Date()
+    }
+    solicitudesMesa.value.unshift(nuevaSolicitud)
+    lastUpdate.value = new Date()
+  }
+  
+  // Acción para que el personal resuelva una solicitud
+  const resolverSolicitud = (solicitudId: number) => {
+    solicitudesMesa.value = solicitudesMesa.value.filter(s => s.id !== solicitudId)
+    lastUpdate.value = new Date()
+  }
+  
   return {
     // Estado
     pedidos,
@@ -520,6 +541,7 @@ export const useDemoStore = defineStore('demo', () => {
     isDemoMode,
     lastUpdate,
     simulateRealTime,
+    solicitudesMesa,
     
     // Computed - Pedidos
     pedidosActivos,
@@ -566,6 +588,10 @@ export const useDemoStore = defineStore('demo', () => {
     calcularTiempoTranscurrido,
     startRealTimeSimulation,
     resetearDemo,
-    exportarDatos
+    exportarDatos,
+    
+    // Solicitudes de mesa
+    crearSolicitud,
+    resolverSolicitud
   }
 })
