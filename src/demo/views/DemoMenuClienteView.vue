@@ -370,6 +370,11 @@ const activeCategoryId = ref('')
 const agregandoAlCarrito = ref<string | null>(null)
 const carritoItems = ref<any[]>([])
 
+// Estado del seguimiento de pedidos
+const pedidoActual = ref<any>(null)
+const mostrandoSeguimiento = ref(false)
+const pedidoCompletado = ref(false)
+
 // Computed
 const menuData = computed(() => demoStore.getMenuData())
 const totalCarrito = computed(() => 
@@ -469,7 +474,7 @@ const eliminarDelCarrito = (index: number) => {
 const realizarPedidoDemo = () => {
   if (carritoItems.value.length === 0) return
   
-  const nuevoPedido = demoStore.crearPedidoDemo({
+  const nuevoPedido = demoStore.crearPedidoConSimulacion({
     numero_mesa: '5',
     cliente_nombre: 'Cliente Demo',
     items: carritoItems.value,
@@ -477,6 +482,23 @@ const realizarPedidoDemo = () => {
     total: totalCarrito.value,
     comensales: 2
   })
+  
+  // Activar seguimiento del pedido
+  pedidoActual.value = nuevoPedido
+  mostrandoSeguimiento.value = true
+  pedidoCompletado.value = false
+  
+  // Configurar watcher para detectar cuando el pedido se complete
+  const checkCompletion = setInterval(() => {
+    const pedidoEnStore = demoStore.pedidos.find(p => p.id === nuevoPedido.id)
+    if (pedidoEnStore) {
+      pedidoActual.value = pedidoEnStore
+      if (pedidoEnStore.estado === 'entregado') {
+        pedidoCompletado.value = true
+        clearInterval(checkCompletion)
+      }
+    }
+  }, 1000)
   
   carritoItems.value = []
   mostrarCarrito.value = false
