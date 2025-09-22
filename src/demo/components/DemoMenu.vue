@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Gestión del Menú</h1>
     <!-- Controles del menú -->
     <div class="demo-card p-6">
       <div class="flex flex-wrap items-center justify-between gap-4">

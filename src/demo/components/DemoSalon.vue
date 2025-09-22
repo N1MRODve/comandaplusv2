@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Gestión del Salón</h1>
     <!-- Métricas del salón -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
       <div class="demo-card p-6">
